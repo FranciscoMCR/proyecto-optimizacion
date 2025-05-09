@@ -7,6 +7,7 @@ import numpy as np
 
 from core.functions import quadratic, rastrigin, rosenbrock
 from core.gradients import symbolic_function, symbolic_gradient
+from core.line_search import armijo_backtracking
 from core.optimizers import gradient_descent
 from core.utils import parse_input_vector
 
@@ -64,6 +65,20 @@ x0 = np.array([3.0, 4.0])
 # Ejecutar optimizador
 x_opt, history = gradient_descent(
     f=f, grad_f=grad_f, x0=x0, step_size=0.1, tol=1e-6, max_iter=100
+)
+
+print(f"Iteraciones: {len(history)}")
+print(f"x óptimo ≈ {x_opt}")
+print(f"f(x) ≈ {f(*x_opt):.6f} (Expected ≈ 0)")
+
+# Test 7: Gradient Descent with Armijo Line Search
+print("\n🔹 Test: Gradiente con búsqueda lineal (Armijo)")
+
+# Reusar f y grad_f de antes
+x0 = np.array([3.0, 4.0])
+
+x_opt, history = gradient_descent(
+    f=f, grad_f=grad_f, x0=x0, tol=1e-6, max_iter=100, line_search=armijo_backtracking
 )
 
 print(f"Iteraciones: {len(history)}")
