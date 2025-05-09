@@ -7,6 +7,7 @@ import numpy as np
 
 from core.functions import quadratic, rastrigin, rosenbrock
 from core.gradients import symbolic_function, symbolic_gradient
+from core.optimizers import gradient_descent
 from core.utils import parse_input_vector
 
 # Test 1: Quadratic function
@@ -47,3 +48,24 @@ print(f"f(3,4) = {f(3.0, 4.0)} (Expected: 25.0)")
 print("\n🔹 Test: Input Parsing")
 parsed = parse_input_vector("1.0, 2.0, 3.5")
 print(f"Parsed: {parsed} (Expected: [1.0 2.0 3.5])")
+
+# Test 6: Gradient
+print("\n🔹 Test: Descenso por Gradiente (sin búsqueda lineal)")
+
+# Función y gradiente simbólicos
+func_str = "x**2 + y**2"
+vars = ["x", "y"]
+f = symbolic_function(func_str, vars)
+grad_f = symbolic_gradient(func_str, vars)
+
+# Punto inicial
+x0 = np.array([3.0, 4.0])
+
+# Ejecutar optimizador
+x_opt, history = gradient_descent(
+    f=f, grad_f=grad_f, x0=x0, step_size=0.1, tol=1e-6, max_iter=100
+)
+
+print(f"Iteraciones: {len(history)}")
+print(f"x óptimo ≈ {x_opt}")
+print(f"f(x) ≈ {f(*x_opt):.6f} (Expected ≈ 0)")
