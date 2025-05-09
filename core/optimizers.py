@@ -55,3 +55,68 @@ def gradient_descent(
         x = x + alpha * d
 
     return x, history
+
+
+def bfgs(
+    f,
+    grad_f,
+    x0: np.ndarray,
+    tol: float = 1e-6,
+    max_iter: int = 100,
+    line_search=None,
+    callback=None,
+):
+    """
+    Método BFGS (quasi-Newton) con opción de búsqueda lineal.
+
+    Parámetros:
+    - f: función objetivo
+    - grad_f: gradiente
+    - x0: punto inicial
+    - tol: tolerancia sobre ||∇f||
+    - max_iter: máximo de iteraciones
+    - line_search: función line_search(f, grad_f, x, d), opcional
+    - callback: función de monitoreo por iteración
+
+    Retorna:
+    - x_opt: punto óptimo
+    - history: lista con registros por iteración
+    """
+    x = x0.copy()
+    n = len(x)
+    H = np.eye(n)  # Aproximación inicial de la Hessiana inversa
+    history = []
+
+    for k in range(1, max_iter + 1):
+        grad = np.array(grad_f(*x), dtype=float)
+        norm_grad = np.linalg.norm(grad)
+        f_x = f(*x)
+
+        history.append((k, x.copy(), f_x, norm_grad))
+        if callback:
+            callback(k, x.copy(), f_x, grad.copy(), norm_grad)
+
+        if norm_grad < tol:
+            break
+
+        # Dirección de descenso: -H ∇f
+        d = -H @ grad
+
+        # Paso
+        alpha = line_search(f, grad_f, x, d) if line_search else 1.0
+        x_new = x + alpha * d
+
+        # Diferencias
+        s = x_new - x
+        y = np.array(grad_f(*x_new), dtype=float) - grad
+
+        # Actualización de H con fórmula BFGS
+        rho = 1.0 / (y @ s)
+        I = np.eye(n)
+        H = (I - rho * np.outer(s, y)) @ H @ (
+            I - rho * np.outer(y, s)
+        ) + rho * np.outer(s, s)
+
+        x = x_new
+
+    return x, history
