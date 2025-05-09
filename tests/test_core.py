@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import numpy as np
 
-from core.functions import quadratic, rastrigin, rosenbrock
+from core.functions import himmelblau, quadratic, rastrigin, rosenbrock
 from core.gradients import symbolic_function, symbolic_gradient
 from core.line_search import armijo_backtracking
 from core.optimizers import gradient_descent
@@ -84,3 +84,10 @@ x_opt, history = gradient_descent(
 print(f"Iteraciones: {len(history)}")
 print(f"x óptimo ≈ {x_opt}")
 print(f"f(x) ≈ {f(*x_opt):.6f} (Expected ≈ 0)")
+
+# Test 8: Himmelblau function
+
+print("\n🔹 Test: Himmelblau Function")
+x = np.array([3.0, 2.0])
+result = himmelblau(x)
+print(f"f(3,2) = {result:.4f} (Expected: 0.0)")

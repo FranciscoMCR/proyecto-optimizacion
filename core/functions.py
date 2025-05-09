@@ -16,4 +16,13 @@ def rastrigin(x: np.ndarray, A=10):
     return A * n + sum(x**2 - A * np.cos(2 * np.pi * x))
 
 
-# Puedes ir agregando Himmelblau, Ackley, etc., según avance el proyecto.
+def himmelblau(x: np.ndarray):
+    """
+    Himmelblau's function:
+    f(x, y) = (x² + y - 11)² + (x + y² - 7)²
+    Tiene múltiples mínimos locales.
+    """
+    if len(x) != 2:
+        raise ValueError("Himmelblau function is only defined for 2D inputs.")
+    x1, x2 = x
+    return (x1**2 + x2 - 11) ** 2 + (x1 + x2**2 - 7) ** 2
