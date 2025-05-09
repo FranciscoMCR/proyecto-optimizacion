@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import numpy as np
 
-from core.functions import himmelblau, quadratic, rastrigin, rosenbrock
+from core.functions import ackley, himmelblau, quadratic, rastrigin, rosenbrock
 from core.gradients import symbolic_function, symbolic_gradient
 from core.line_search import armijo_backtracking
 from core.optimizers import gradient_descent
@@ -91,3 +91,35 @@ print("\n🔹 Test: Himmelblau Function")
 x = np.array([3.0, 2.0])
 result = himmelblau(x)
 print(f"f(3,2) = {result:.4f} (Expected: 0.0)")
+
+# Test 9: Ackley function
+
+print("\n🔹 Test: Ackley Function")
+x = np.zeros(2)
+result = ackley(x)
+print(f"f(0,0) = {result:.6f} (Expected: 0.0)")
+
+# Test 10: Optimización con Ackley Function (gradiente simbólico)
+
+print("\n🔹 Test: Optimización con Ackley Function (gradiente simbólico)")
+
+# Redefinir la función y gradiente de forma simbólica
+ackley_str = "-20 * exp(-0.2 * sqrt(0.5*(x**2 + y**2))) - exp(0.5 * (cos(2*pi*x) + cos(2*pi*y))) + 20 + exp(1)"
+vars = ["x", "y"]
+f_ackley = symbolic_function(ackley_str, vars)
+grad_ackley = symbolic_gradient(ackley_str, vars)
+
+x0 = np.array([2.0, 2.0])
+
+x_opt, history = gradient_descent(
+    f=f_ackley,
+    grad_f=grad_ackley,
+    x0=x0,
+    tol=1e-6,
+    max_iter=200,
+    line_search=armijo_backtracking,
+)
+
+print(f"Iteraciones: {len(history)}")
+print(f"x óptimo ≈ {x_opt}")
+print(f"f(x) ≈ {f_ackley(*x_opt):.6f} (Expected ≈ 0)")
