@@ -4,7 +4,7 @@ import numpy as np
 def quadratic(x: np.ndarray, A=None, b=None, c=0):
     A = A if A is not None else np.eye(len(x))
     b = b if b is not None else np.zeros(len(x))
-    return float(x.T @ A @ x + b.T @ x + c)
+    return float(0.5 * x.T @ A @ x + b.T @ x + c)
 
 
 def rosenbrock(x: np.ndarray, a=1, b=100):
