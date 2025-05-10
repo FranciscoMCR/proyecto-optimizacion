@@ -49,7 +49,7 @@ An interactive Python application to test and visualize optimization algorithms 
 Install dependencies:
 pip install -r requirements.txt
 
-##🖥️ How to Run
+## 🖥️ How to Run
 To launch the GUI:
 python main.py
 
@@ -69,7 +69,7 @@ Steps:
 
 7. Click Run
 
-##🧪 Running Tests
+## 🧪 Running Tests
 
 To validate core components:
 python tests/test_core.py
@@ -79,7 +79,8 @@ This script tests:
 - Symbolic gradient correctness
 - Optimizer behavior on various functions
 
-##📁 Project Structure
+## 📁 Project Structure
+
 proyecto_optimizacion/
 ├── core/
 │   ├── functions.py         # Benchmark objective functions
