@@ -1,96 +1,75 @@
 # 🧠 Optimization Playground
 
-An interactive Python application to test and visualize optimization algorithms using symbolic functions. Built with **Tkinter**, **SymPy**, **NumPy**, **Matplotlib**, and custom optimizers, this project is ideal for experimenting with descent methods and benchmark functions.
+Un entorno interactivo para experimentar con algoritmos de optimización clásicos y estocásticos. Implementado en Python con interfaz gráfica mediante Tkinter.
 
 ---
 
-## 🚀 Features
+## 🚀 Características
 
-### ✅ Core Functionality
-- Symbolic input of functions (e.g., `x**2 + y**2`)
-- Symbolic gradient computation via SymPy
-- Support for:
-  - **Gradient Descent** (fixed step or line search)
-  - **BFGS** (with Armijo or Wolfe conditions)
-  - **Adam Optimizer**
+- **Métodos clásicos:**
+  - ✅ Gradient Descent (con o sin búsqueda lineal)
+  - ✅ BFGS (cuasi-Newton)
+  - ✅ Adam (optimizador adaptativo)
 
-### ✅ Line Search Methods
-- Armijo Backtracking
-- Wolfe Conditions
-- Fixed Step Size
+- **Métodos estocásticos:**
+  - ✅ Stochastic Gradient Descent (SGD)
 
-### ✅ Benchmark Functions Included
-- Quadratic
-- Rosenbrock
-- Rastrigin
-- Himmelblau
-- Ackley
-- Griewank
+- **Búsqueda lineal:**
+  - ✅ Armijo Backtracking
+  - ✅ Wolfe Conditions
 
-### ✅ GUI Features
-- Input function, variables, initial point, tolerance, method, and line search
-- Real-time convergence plots:
-  - `f(x)` per iteration
-  - `‖∇f(x)‖` per iteration
-- Iteration table with:
-  - Iteration number
-  - Function value `f(x)`
-  - Gradient norm `‖∇f‖`
-  - Step size `alpha`
-- **Execution summary** after optimization:
-  - Runtime in seconds
-  - Number of function evaluations
-  - Number of gradient evaluations
+- **Visualización integrada:**
+  - 📈 Convergencia de `f(x)` por iteración
+  - 📈 Convergencia de `‖∇f(x)‖`
+  - 📊 Tabla con métricas por iteración
+  - 🌐 Visualización 3D para funciones con 2 variables
+
+- **Métricas adicionales:**
+  - ⏱️ Tiempo de ejecución
+  - 🔢 Número de evaluaciones de `f(x)` y `∇f(x)`
 
 ---
 
-## 📦 Requirements
+## 🖥️ Interfaz Gráfica
 
-Install dependencies:
+La GUI permite:
+
+- Ingresar funciones simbólicas como `x**2 + y**2`
+- Especificar variables y punto inicial
+- Configurar tolerancia, método, búsqueda lineal y tasa de aprendizaje
+- Visualizar resultados gráficos y métricas detalladas
+- Mostrar la función objetivo en 3D con `Show 3D Plot`
+
+---
+
+## 📦 Instalación
+
+1. Clona el repositorio:
+
+```bash
+git clone https://github.com/tu-usuario/proyecto_optimizacion.git
+cd proyecto_optimizacion
+```
+2. Crea y activa un entorno virtual:
+
+```bash
+python -m venv .venv
+# Activar entorno:
+# Windows:
+.venv\Scripts\activate
+# macOS/Linux:
+source .venv/bin/activate
+```
+
+3. Instala dependencias:
+
+```bash
 pip install -r requirements.txt
+```
 
-## 🖥️ How to Run
-To launch the GUI:
+---
+
+## ▶️ Ejecutar la aplicación
+```bash
 python main.py
-
-Steps:
-
-1. Enter a symbolic function (e.g., x**2 + y**2)
-
-2. Enter variables separated by commas (e.g., x,y)
-
-3. Provide the initial point (e.g., 3,4)
-
-4. Set tolerance (e.g., 1e-6)
-
-5. Choose the optimizer (Gradient Descent, BFGS, or Adam)
-
-6. Select the line search method if needed (None, Armijo, or Wolfe)
-
-7. Click Run
-
-## 🧪 Running Tests
-
-To validate core components:
-python tests/test_core.py
-
-This script tests:
-- Function evaluations
-- Symbolic gradient correctness
-- Optimizer behavior on various functions
-
-## 📁 Project Structure
-
-proyecto_optimizacion/
-├── core/
-│   ├── functions.py         # Benchmark objective functions
-│   ├── gradients.py         # Symbolic gradient and function tools
-│   ├── line_search.py       # Line search implementations
-│   ├── optimizers.py        # Optimization algorithms (GD, BFGS, Adam)
-│   ├── utils.py             # Input parsing and validation
-│   ├── logger.py            # Per-iteration logging for GUI
-├── tests/
-│   └── test_core.py         # Unit tests for all modules
-├── main.py                  # Tkinter-based graphical interface
-├── requirements.txt
-└── README.md
+```
