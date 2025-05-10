@@ -10,6 +10,7 @@ def gradient_descent(
     step_size: float = 0.01,
     line_search=None,
     callback=None,
+    alpha=None,
 ):
     """
     Método de descenso por gradiente con paso fijo o búsqueda lineal.
