@@ -140,6 +140,7 @@ class OptimizerApp(tk.Tk):
             learning_rate = float(self.lr_entry.get())
 
             logger = OptimizerLogger()
+            logger.reset()  # por si se ejecuta múltiples veces
 
             eval_count = {"f": 0, "grad": 0}
 
