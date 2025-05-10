@@ -17,6 +17,7 @@ from core.gradients import symbolic_function, symbolic_gradient
 from core.line_search import armijo_backtracking, wolfe_line_search
 from core.logger import OptimizerLogger
 from core.optimizers import adam, bfgs, gradient_descent
+from core.stochastic import stochastic_gradient_descent
 from core.utils import parse_input_vector
 
 # Test 1: Quadratic function
@@ -194,6 +195,33 @@ x_opt, history = adam(
     tol=1e-6,
     max_iter=1000,
     alpha=0.05,  # tasa de aprendizaje
+)
+
+print(f"Iteraciones: {len(history)}")
+print(f"x óptimo ≈ {x_opt}")
+print(f"f(x) ≈ {f(*x_opt):.6f} (Expected ≈ 0)")
+
+# Test 15: Stochastic Gradient Descent with Rastrigin function
+print("\n🔹 Test: Stochastic Gradient Descent (cuadrática)")
+
+# Definición simbólica
+func_str = "x**2 + y**2"
+vars = ["x", "y"]
+f = symbolic_function(func_str, vars)
+grad_f = symbolic_gradient(func_str, vars)
+
+# Punto inicial
+x0 = np.array([5.0, -3.0])
+
+# Ejecutar SGD
+x_opt, history = stochastic_gradient_descent(
+    f=f,
+    grad_f=grad_f,
+    x0=x0,
+    step_size=0.1,
+    noise_scale=1e-2,
+    tol=1e-5,
+    max_iter=200,
 )
 
 print(f"Iteraciones: {len(history)}")
