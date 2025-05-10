@@ -5,7 +5,7 @@ def stochastic_gradient_descent(
     f,
     grad_f,
     x0,
-    step_size=0.01,
+    learning_rate=0.01,
     tol=1e-6,
     max_iter=100,
     noise_scale=1e-3,
@@ -18,7 +18,7 @@ def stochastic_gradient_descent(
     - f: función objetivo
     - grad_f: función gradiente
     - x0: punto inicial (np.ndarray)
-    - step_size: tamaño de paso base
+    - learning_rate: tasa de aprendizaje
     - tol: tolerancia para ||∇f||
     - max_iter: número máximo de iteraciones
     - noise_scale: amplitud del ruido gaussiano aplicado al gradiente
@@ -41,12 +41,13 @@ def stochastic_gradient_descent(
         history.append((k, x.copy(), f_x, norm_grad))
 
         if callback:
-            callback(k, x.copy(), f_x, grad_noisy, norm_grad, step_size)
+            callback(k, x.copy(), f_x, grad_noisy, norm_grad, learning_rate)
 
         if norm_grad < tol:
             break
 
-        x = x - step_size * grad_noisy
+        d = -grad_noisy
+        x = x + learning_rate * d
 
     return x, history
 

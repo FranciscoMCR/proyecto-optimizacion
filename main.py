@@ -81,19 +81,26 @@ class OptimizerApp(tk.Tk):
         self.method_combo.set("Gradient Descent")
         self.method_combo.grid(row=4, column=1, pady=5)
 
-        ttk.Label(self.content_frame, text="Line Search:").grid(
+        ttk.Label(self.content_frame, text="Learning Rate:").grid(
             row=5, column=0, sticky="w"
+        )
+        self.lr_entry = ttk.Entry(self.content_frame)
+        self.lr_entry.insert(0, "0.01")
+        self.lr_entry.grid(row=5, column=1, pady=5)
+
+        ttk.Label(self.content_frame, text="Line Search:").grid(
+            row=6, column=0, sticky="w"
         )
         self.search_combo = ttk.Combobox(
             self.content_frame, values=["None", "Armijo", "Wolfe"]
         )
         self.search_combo.set("None")
-        self.search_combo.grid(row=5, column=1, pady=5)
+        self.search_combo.grid(row=6, column=1, pady=5)
 
         self.run_button = ttk.Button(
             self.content_frame, text="Run", command=self.run_optimization
         )
-        self.run_button.grid(row=6, column=0, columnspan=2, pady=10)
+        self.run_button.grid(row=7, column=0, columnspan=2, pady=10)
 
         columns = ("iter", "f_x", "norm_grad", "alpha")
         self.tree = ttk.Treeview(
@@ -101,7 +108,7 @@ class OptimizerApp(tk.Tk):
         )
         for col in columns:
             self.tree.heading(col, text=col)
-        self.tree.grid(row=7, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
+        self.tree.grid(row=8, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
 
         self.grid_columnconfigure(1, weight=1)
 
@@ -109,18 +116,18 @@ class OptimizerApp(tk.Tk):
         self.ax = self.figure.add_subplot(111)
         self.canvas = FigureCanvasTkAgg(self.figure, self.content_frame)
         self.canvas.get_tk_widget().grid(
-            row=8, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
+            row=9, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
         )
 
         self.figure2 = plt.Figure(figsize=(6, 2.5), dpi=100)
         self.ax2 = self.figure2.add_subplot(111)
         self.canvas2 = FigureCanvasTkAgg(self.figure2, self.content_frame)
         self.canvas2.get_tk_widget().grid(
-            row=9, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
+            row=10, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
         )
 
         self.stats_label = ttk.Label(self.content_frame, text="")
-        self.stats_label.grid(row=10, column=0, columnspan=4, pady=10)
+        self.stats_label.grid(row=11, column=0, columnspan=4, pady=10)
 
     def run_optimization(self):
         try:
@@ -130,6 +137,7 @@ class OptimizerApp(tk.Tk):
             grad_f = symbolic_gradient(func_str, variables)
             x0 = np.array([float(val) for val in self.x0_entry.get().split(",")])
             tol = float(self.tol_entry.get())
+            learning_rate = float(self.lr_entry.get())
 
             logger = OptimizerLogger()
 
@@ -164,13 +172,21 @@ class OptimizerApp(tk.Tk):
                     callback=logger,
                 )
             elif method == "Adam":
-                x_opt, _ = adam(wrapped_f, wrapped_grad_f, x0, tol=tol, callback=logger)
+                x_opt, _ = adam(
+                    wrapped_f,
+                    wrapped_grad_f,
+                    x0,
+                    tol=tol,
+                    learning_rate=learning_rate,
+                    callback=logger,
+                )
             elif method == "SGD":
                 x_opt, _ = stochastic_gradient_descent(
                     wrapped_f,
                     wrapped_grad_f,
                     x0,
                     tol=tol,
+                    learning_rate=learning_rate,
                     callback=logger,
                 )
             else:
