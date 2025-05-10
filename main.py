@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 
+import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from core.gradients import symbolic_function, symbolic_gradient
 from core.line_search import armijo_backtracking, wolfe_line_search
@@ -66,6 +68,14 @@ class OptimizerApp(tk.Tk):
 
         self.grid_columnconfigure(1, weight=1)
 
+        # Espacio para la gráfica
+        self.figure = plt.Figure(figsize=(6, 2.5), dpi=100)
+        self.ax = self.figure.add_subplot(111)
+        self.canvas = FigureCanvasTkAgg(self.figure, self)
+        self.canvas.get_tk_widget().grid(
+            row=8, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
+        )
+
     def run_optimization(self):
         try:
             func_str = self.func_entry.get()
@@ -97,7 +107,7 @@ class OptimizerApp(tk.Tk):
                     f, grad_f, x0, tol=tol, line_search=line_search, callback=logger
                 )
 
-            # Mostrar resultados
+            # Mostrar resultados en tabla
             self.tree.delete(*self.tree.get_children())
             for log in logger.get_log():
                 self.tree.insert(
@@ -110,6 +120,17 @@ class OptimizerApp(tk.Tk):
                         f"{log['alpha']:.6f}" if log["alpha"] else "-",
                     ),
                 )
+
+            # Gráfica de convergencia
+            self.ax.clear()
+            fx_vals = [log["f_x"] for log in logger.get_log()]
+            iterations = [log["iter"] for log in logger.get_log()]
+            self.ax.plot(iterations, fx_vals, marker="o", linestyle="-")
+            self.ax.set_title("Convergence of f(x)")
+            self.ax.set_xlabel("Iteration")
+            self.ax.set_ylabel("f(x)")
+            self.ax.grid(True)
+            self.canvas.draw()
 
         except Exception as e:
             messagebox.showerror("Error", f"{type(e).__name__}: {str(e)}")

@@ -3,3 +3,4 @@ sympy
 black
 isort
 pre-commit
+matplotlib
