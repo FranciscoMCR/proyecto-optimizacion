@@ -16,64 +16,116 @@ class OptimizerApp(tk.Tk):
         super().__init__()
         self.title("Optimization Playground")
         self.geometry("800x600")
+
+        # Contenedor base con scrollbar
+        self.container = ttk.Frame(self)
+        self.container.pack(fill="both", expand=True)
+
+        self.scroll_canvas = tk.Canvas(self.container)
+        self.scrollbar = ttk.Scrollbar(
+            self.container, orient="vertical", command=self.scroll_canvas.yview
+        )
+        self.scroll_canvas.configure(yscrollcommand=self.scrollbar.set)
+
+        self.scrollbar.pack(side="right", fill="y")
+        self.scroll_canvas.pack(side="left", fill="both", expand=True)
+
+        # Frame interno donde se colocarán todos los widgets
+        self.content_frame = ttk.Frame(self.scroll_canvas)
+        self.scroll_canvas.create_window((0, 0), window=self.content_frame, anchor="nw")
+
+        # Activar scroll dinámico
+        self.content_frame.bind(
+            "<Configure>",
+            lambda e: self.scroll_canvas.configure(
+                scrollregion=self.scroll_canvas.bbox("all")
+            ),
+        )
+
         self.create_widgets()
 
     def create_widgets(self):
         # Entrada de función
-        ttk.Label(self, text="Function (f):").grid(row=0, column=0, sticky="w")
-        self.func_entry = ttk.Entry(self, width=50)
+        ttk.Label(self.content_frame, text="Function (f):").grid(
+            row=0, column=0, sticky="w"
+        )
+        self.func_entry = ttk.Entry(self.content_frame, width=50)
         self.func_entry.insert(0, "x**2 + y**2")
         self.func_entry.grid(row=0, column=1, columnspan=3, pady=5)
 
         # Variables
-        ttk.Label(self, text="Variables:").grid(row=1, column=0, sticky="w")
-        self.vars_entry = ttk.Entry(self)
+        ttk.Label(self.content_frame, text="Variables:").grid(
+            row=1, column=0, sticky="w"
+        )
+        self.vars_entry = ttk.Entry(self.content_frame)
         self.vars_entry.insert(0, "x,y")
         self.vars_entry.grid(row=1, column=1, sticky="ew", pady=5)
 
         # Punto inicial
-        ttk.Label(self, text="Initial Point:").grid(row=2, column=0, sticky="w")
-        self.x0_entry = ttk.Entry(self)
+        ttk.Label(self.content_frame, text="Initial Point:").grid(
+            row=2, column=0, sticky="w"
+        )
+        self.x0_entry = ttk.Entry(self.content_frame)
         self.x0_entry.insert(0, "3,4")
         self.x0_entry.grid(row=2, column=1, pady=5)
 
         # Tolerancia
-        ttk.Label(self, text="Tolerance:").grid(row=3, column=0, sticky="w")
-        self.tol_entry = ttk.Entry(self)
+        ttk.Label(self.content_frame, text="Tolerance:").grid(
+            row=3, column=0, sticky="w"
+        )
+        self.tol_entry = ttk.Entry(self.content_frame)
         self.tol_entry.insert(0, "1e-6")
         self.tol_entry.grid(row=3, column=1, pady=5)
 
         # Método
-        ttk.Label(self, text="Method:").grid(row=4, column=0, sticky="w")
-        self.method_combo = ttk.Combobox(self, values=["Gradient Descent", "BFGS"])
+        ttk.Label(self.content_frame, text="Method:").grid(row=4, column=0, sticky="w")
+        self.method_combo = ttk.Combobox(
+            self.content_frame, values=["Gradient Descent", "BFGS"]
+        )
         self.method_combo.set("Gradient Descent")
         self.method_combo.grid(row=4, column=1, pady=5)
 
         # Estrategia de búsqueda
-        ttk.Label(self, text="Line Search:").grid(row=5, column=0, sticky="w")
-        self.search_combo = ttk.Combobox(self, values=["None", "Armijo", "Wolfe"])
+        ttk.Label(self.content_frame, text="Line Search:").grid(
+            row=5, column=0, sticky="w"
+        )
+        self.search_combo = ttk.Combobox(
+            self.content_frame, values=["None", "Armijo", "Wolfe"]
+        )
         self.search_combo.set("None")
         self.search_combo.grid(row=5, column=1, pady=5)
 
         # Botón de ejecución
-        self.run_button = ttk.Button(self, text="Run", command=self.run_optimization)
+        self.run_button = ttk.Button(
+            self.content_frame, text="Run", command=self.run_optimization
+        )
         self.run_button.grid(row=6, column=0, columnspan=2, pady=10)
 
         # Tabla de resultados
         columns = ("iter", "f_x", "norm_grad", "alpha")
-        self.tree = ttk.Treeview(self, columns=columns, show="headings", height=20)
+        self.tree = ttk.Treeview(
+            self.content_frame, columns=columns, show="headings", height=20
+        )
         for col in columns:
             self.tree.heading(col, text=col)
         self.tree.grid(row=7, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
 
-        self.grid_columnconfigure(1, weight=1)
+        self.content_frame.grid_columnconfigure(1, weight=1)
 
-        # Espacio para la gráfica
+        # Gráfica f(x)
         self.figure = plt.Figure(figsize=(6, 2.5), dpi=100)
         self.ax = self.figure.add_subplot(111)
-        self.canvas = FigureCanvasTkAgg(self.figure, self)
-        self.canvas.get_tk_widget().grid(
+        self.graph_canvas = FigureCanvasTkAgg(self.figure, self.content_frame)
+        self.graph_canvas.get_tk_widget().grid(
             row=8, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
+        )
+
+        # Gráfica ||∇f||
+        self.figure2 = plt.Figure(figsize=(6, 2.5), dpi=100)
+        self.ax2 = self.figure2.add_subplot(111)
+        self.graph_canvas2 = FigureCanvasTkAgg(self.figure2, self.content_frame)
+        self.graph_canvas2.get_tk_widget().grid(
+            row=9, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
         )
 
     def run_optimization(self):
@@ -87,7 +139,7 @@ class OptimizerApp(tk.Tk):
 
             logger = OptimizerLogger()
 
-            # Selector de búsqueda
+            # Line search
             ls_option = self.search_combo.get()
             if ls_option == "Armijo":
                 line_search = armijo_backtracking
@@ -96,7 +148,7 @@ class OptimizerApp(tk.Tk):
             else:
                 line_search = None
 
-            # Selector de método
+            # Método
             method = self.method_combo.get()
             if method == "BFGS":
                 x_opt, _ = bfgs(
@@ -107,7 +159,7 @@ class OptimizerApp(tk.Tk):
                     f, grad_f, x0, tol=tol, line_search=line_search, callback=logger
                 )
 
-            # Mostrar resultados en tabla
+            # Tabla de resultados
             self.tree.delete(*self.tree.get_children())
             for log in logger.get_log():
                 self.tree.insert(
@@ -121,7 +173,7 @@ class OptimizerApp(tk.Tk):
                     ),
                 )
 
-            # Gráfica de convergencia
+            # Gráfico f(x)
             self.ax.clear()
             fx_vals = [log["f_x"] for log in logger.get_log()]
             iterations = [log["iter"] for log in logger.get_log()]
@@ -130,7 +182,19 @@ class OptimizerApp(tk.Tk):
             self.ax.set_xlabel("Iteration")
             self.ax.set_ylabel("f(x)")
             self.ax.grid(True)
-            self.canvas.draw()
+            self.graph_canvas.draw()
+
+            # Gráfico ||∇f||
+            self.ax2.clear()
+            grad_vals = [log["norm_grad"] for log in logger.get_log()]
+            self.ax2.plot(
+                iterations, grad_vals, marker="o", linestyle="-", color="orange"
+            )
+            self.ax2.set_title("Convergence of ‖∇f(x)‖")
+            self.ax2.set_xlabel("Iteration")
+            self.ax2.set_ylabel("‖∇f‖")
+            self.ax2.grid(True)
+            self.graph_canvas2.draw()
 
         except Exception as e:
             messagebox.showerror("Error", f"{type(e).__name__}: {str(e)}")
