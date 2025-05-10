@@ -40,3 +40,13 @@ def ackley(x: np.ndarray, a=20, b=0.2, c=2 * np.pi):
     term1 = -a * np.exp(-b * np.sqrt(sum_sq / n))
     term2 = -np.exp(sum_cos / n)
     return term1 + term2 + a + np.exp(1)
+
+
+def griewank(x: np.ndarray) -> float:
+    """
+    Griewank function (2D version).
+    Global minimum at [0, 0] with f(x) = 0
+    """
+    sum_term = np.sum(x**2) / 4000
+    prod_term = np.prod([np.cos(x[i] / np.sqrt(i + 1)) for i in range(len(x))])
+    return 1 + sum_term - prod_term
