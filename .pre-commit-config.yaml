@@ -1,17 +1,28 @@
-# .pre-commit-config.yaml
-repos:
-  - repo: https://github.com/psf/black
-    rev: 23.3.0
-    hooks:
-      - id: black
+default_stages: [pre-commit]
 
-  - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.10.1
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 6.0.1
     hooks:
       - id: isort
+        args: ["--profile", "black"]
 
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
     hooks:
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
+      - id: black
+        language_version: python3
+
+# - repo: https://github.com/PyCQA/flake8
+#   rev: 6.1.0
+#   hooks:
+#     - id: flake8
+#       args: ["--config=setup.cfg"]
+#       additional_dependencies: [flake8-isort]
