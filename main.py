@@ -10,6 +10,7 @@ from core.gradients import symbolic_function, symbolic_gradient
 from core.line_search import armijo_backtracking, wolfe_line_search
 from core.logger import OptimizerLogger
 from core.optimizers import adam, bfgs, gradient_descent
+from core.stochastic import stochastic_gradient_descent
 
 
 class OptimizerApp(tk.Tk):
@@ -75,7 +76,7 @@ class OptimizerApp(tk.Tk):
 
         ttk.Label(self.content_frame, text="Method:").grid(row=4, column=0, sticky="w")
         self.method_combo = ttk.Combobox(
-            self.content_frame, values=["Gradient Descent", "BFGS", "Adam"]
+            self.content_frame, values=["Gradient Descent", "BFGS", "Adam", "SGD"]
         )
         self.method_combo.set("Gradient Descent")
         self.method_combo.grid(row=4, column=1, pady=5)
@@ -164,6 +165,14 @@ class OptimizerApp(tk.Tk):
                 )
             elif method == "Adam":
                 x_opt, _ = adam(wrapped_f, wrapped_grad_f, x0, tol=tol, callback=logger)
+            elif method == "SGD":
+                x_opt, _ = stochastic_gradient_descent(
+                    wrapped_f,
+                    wrapped_grad_f,
+                    x0,
+                    tol=tol,
+                    callback=logger,
+                )
             else:
                 x_opt, _ = gradient_descent(
                     wrapped_f,
