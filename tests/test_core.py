@@ -5,7 +5,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import numpy as np
 
-from core.functions import ackley, himmelblau, quadratic, rastrigin, rosenbrock
+from core.functions import (ackley, griewank, himmelblau, quadratic, rastrigin,
+                            rosenbrock)
 from core.gradients import symbolic_function, symbolic_gradient
 from core.line_search import armijo_backtracking, wolfe_line_search
 from core.logger import OptimizerLogger
@@ -163,3 +164,9 @@ x_opt, history = bfgs(
 print(f"x óptimo ≈ {x_opt}")
 print(f"f(x) ≈ {f_ackley(*x_opt):.6f}")
 logger.print_summary()
+
+# Test 13: Griewank function
+print("\n🔹 Test: Griewank Function")
+x = np.zeros(2)
+result = griewank(x)
+print(f"f(0,0) = {result:.6f} (Expected: 0.0)")
