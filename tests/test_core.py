@@ -10,7 +10,7 @@ from core.functions import (ackley, griewank, himmelblau, quadratic, rastrigin,
 from core.gradients import symbolic_function, symbolic_gradient
 from core.line_search import armijo_backtracking, wolfe_line_search
 from core.logger import OptimizerLogger
-from core.optimizers import bfgs, gradient_descent
+from core.optimizers import adam, bfgs, gradient_descent
 from core.utils import parse_input_vector
 
 # Test 1: Quadratic function
@@ -170,3 +170,26 @@ print("\n🔹 Test: Griewank Function")
 x = np.zeros(2)
 result = griewank(x)
 print(f"f(0,0) = {result:.6f} (Expected: 0.0)")
+
+# Test 14: Adam Optimizer with Rastrigin function
+
+print("\n🔹 Test: Optimización con Adam (cuadrática)")
+
+func_str = "x**2 + y**2"
+vars = ["x", "y"]
+f = symbolic_function(func_str, vars)
+grad_f = symbolic_gradient(func_str, vars)
+x0 = np.array([3.0, 4.0])
+
+x_opt, history = adam(
+    f=f,
+    grad_f=grad_f,
+    x0=x0,
+    tol=1e-6,
+    max_iter=1000,
+    alpha=0.05,  # tasa de aprendizaje
+)
+
+print(f"Iteraciones: {len(history)}")
+print(f"x óptimo ≈ {x_opt}")
+print(f"f(x) ≈ {f(*x_opt):.6f} (Expected ≈ 0)")

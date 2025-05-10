@@ -122,3 +122,63 @@ def bfgs(
         x = x_new
 
     return x, history
+
+
+def adam(
+    f,
+    grad_f,
+    x0: np.ndarray,
+    tol: float = 1e-6,
+    max_iter: int = 100,
+    alpha: float = 0.01,
+    beta1: float = 0.9,
+    beta2: float = 0.999,
+    epsilon: float = 1e-8,
+    callback=None,
+):
+    """
+    Adam optimizer para funciones multivariables.
+
+    Parámetros:
+    - f: función objetivo f(x)
+    - grad_f: función gradiente ∇f(x)
+    - x0: punto inicial
+    - tol: tolerancia para ||∇f(x)||
+    - max_iter: número máximo de iteraciones
+    - alpha: tasa de aprendizaje
+    - beta1: decaimiento de primer momento
+    - beta2: decaimiento de segundo momento
+    - epsilon: valor pequeño para estabilidad numérica
+    - callback: función para logging de iteraciones
+
+    Retorna:
+    - x_opt: punto encontrado
+    - history: lista de tuplas (iter, x, f(x), ||grad||, alpha)
+    """
+    x = x0.copy()
+    m = np.zeros_like(x)
+    v = np.zeros_like(x)
+    history = []
+
+    for k in range(1, max_iter + 1):
+        grad = np.array(grad_f(*x), dtype=float)
+        f_x = f(*x)
+        norm_grad = np.linalg.norm(grad)
+
+        history.append((k, x.copy(), f_x, norm_grad, alpha))
+
+        if callback:
+            callback(k, x.copy(), f_x, grad.copy(), norm_grad, alpha)
+
+        if norm_grad < tol:
+            break
+
+        m = beta1 * m + (1 - beta1) * grad
+        v = beta2 * v + (1 - beta2) * (grad**2)
+
+        m_hat = m / (1 - beta1**k)
+        v_hat = v / (1 - beta2**k)
+
+        x = x - alpha * m_hat / (np.sqrt(v_hat) + epsilon)
+
+    return x, history

@@ -8,7 +8,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from core.gradients import symbolic_function, symbolic_gradient
 from core.line_search import armijo_backtracking, wolfe_line_search
 from core.logger import OptimizerLogger
-from core.optimizers import bfgs, gradient_descent
+from core.optimizers import adam, bfgs, gradient_descent
 
 
 class OptimizerApp(tk.Tk):
@@ -80,7 +80,7 @@ class OptimizerApp(tk.Tk):
         # Método
         ttk.Label(self.content_frame, text="Method:").grid(row=4, column=0, sticky="w")
         self.method_combo = ttk.Combobox(
-            self.content_frame, values=["Gradient Descent", "BFGS"]
+            self.content_frame, values=["Gradient Descent", "BFGS", "Adam"]
         )
         self.method_combo.set("Gradient Descent")
         self.method_combo.grid(row=4, column=1, pady=5)
@@ -153,6 +153,10 @@ class OptimizerApp(tk.Tk):
             if method == "BFGS":
                 x_opt, _ = bfgs(
                     f, grad_f, x0, tol=tol, line_search=line_search, callback=logger
+                )
+            elif method == "Adam":
+                x_opt, _ = adam(
+                    f, grad_f, x0, tol=tol, max_iter=1000, alpha=0.05, callback=logger
                 )
             else:
                 x_opt, _ = gradient_descent(
