@@ -10,6 +10,7 @@ from core.gradients import symbolic_function, symbolic_gradient
 from core.line_search import armijo_backtracking, wolfe_line_search
 from core.logger import OptimizerLogger
 from core.optimizers import adam, bfgs, gradient_descent
+from core.plotting import show_3d_plot
 from core.stochastic import stochastic_gradient_descent
 
 
@@ -100,7 +101,12 @@ class OptimizerApp(tk.Tk):
         self.run_button = ttk.Button(
             self.content_frame, text="Run", command=self.run_optimization
         )
+
         self.run_button.grid(row=7, column=0, columnspan=2, pady=10)
+        self.plot3d_button = ttk.Button(
+            self.content_frame, text="Show 3D Plot", command=self.on_show_3d_plot
+        )
+        self.plot3d_button.grid(row=7, column=2, columnspan=2, pady=10)
 
         columns = ("iter", "f_x", "norm_grad", "alpha")
         self.tree = ttk.Treeview(
@@ -243,6 +249,11 @@ class OptimizerApp(tk.Tk):
 
         except Exception as e:
             messagebox.showerror("Error", f"{type(e).__name__}: {str(e)}")
+
+    def on_show_3d_plot(self):
+        func_str = self.func_entry.get()
+        variables = [v.strip() for v in self.vars_entry.get().split(",")]
+        show_3d_plot(self, func_str, variables)
 
 
 if __name__ == "__main__":
