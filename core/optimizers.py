@@ -130,7 +130,7 @@ def adam(
     x0: np.ndarray,
     tol: float = 1e-6,
     max_iter: int = 100,
-    alpha: float = 0.01,
+    learning_rate: float = 0.01,
     beta1: float = 0.9,
     beta2: float = 0.999,
     epsilon: float = 1e-8,
@@ -143,9 +143,9 @@ def adam(
     - f: función objetivo f(x)
     - grad_f: función gradiente ∇f(x)
     - x0: punto inicial
-    - tol: tolerancia para ||∇f(x)||
+    - tol: tolerancia para ||∇f(x)|| < tol
     - max_iter: número máximo de iteraciones
-    - alpha: tasa de aprendizaje
+    - learning_rate: tasa de aprendizaje (α)
     - beta1: decaimiento de primer momento
     - beta2: decaimiento de segundo momento
     - epsilon: valor pequeño para estabilidad numérica
@@ -153,7 +153,7 @@ def adam(
 
     Retorna:
     - x_opt: punto encontrado
-    - history: lista de tuplas (iter, x, f(x), ||grad||, alpha)
+    - history: lista de tuplas (iter, x, f(x), ||grad||, α)
     """
     x = x0.copy()
     m = np.zeros_like(x)
@@ -165,10 +165,10 @@ def adam(
         f_x = f(*x)
         norm_grad = np.linalg.norm(grad)
 
-        history.append((k, x.copy(), f_x, norm_grad, alpha))
+        history.append((k, x.copy(), f_x, norm_grad, learning_rate))
 
         if callback:
-            callback(k, x.copy(), f_x, grad.copy(), norm_grad, alpha)
+            callback(k, x.copy(), f_x, grad.copy(), norm_grad, learning_rate)
 
         if norm_grad < tol:
             break
@@ -179,6 +179,6 @@ def adam(
         m_hat = m / (1 - beta1**k)
         v_hat = v / (1 - beta2**k)
 
-        x = x - alpha * m_hat / (np.sqrt(v_hat) + epsilon)
+        x -= learning_rate * m_hat / (np.sqrt(v_hat) + epsilon)
 
     return x, history
