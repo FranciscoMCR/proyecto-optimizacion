@@ -5,8 +5,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import numpy as np
 
-from core.functions import (ackley, griewank, himmelblau, quadratic, rastrigin,
-                            rosenbrock)
+from core.functions import (
+    ackley,
+    griewank,
+    himmelblau,
+    quadratic,
+    rastrigin,
+    rosenbrock,
+)
 from core.gradients import symbolic_function, symbolic_gradient
 from core.line_search import armijo_backtracking, wolfe_line_search
 from core.logger import OptimizerLogger

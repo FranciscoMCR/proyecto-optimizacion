@@ -94,5 +94,3 @@ proyecto_optimizacion/
 ├── main.py                  # Tkinter-based graphical interface
 ├── requirements.txt
 └── README.md
-
-
