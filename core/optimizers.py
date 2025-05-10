@@ -40,7 +40,7 @@ def gradient_descent(
         history.append((k, x.copy(), f_x, norm_grad))
 
         if callback:
-            callback(k, x.copy(), f_x, grad.copy(), norm_grad)
+            callback(k, x.copy(), f_x, grad.copy(), norm_grad, alpha)
 
         if norm_grad < tol:
             break
@@ -86,6 +86,7 @@ def bfgs(
     n = len(x)
     H = np.eye(n)  # Aproximación inicial de la Hessiana inversa
     history = []
+    alpha = None
 
     for k in range(1, max_iter + 1):
         grad = np.array(grad_f(*x), dtype=float)
@@ -94,7 +95,7 @@ def bfgs(
 
         history.append((k, x.copy(), f_x, norm_grad))
         if callback:
-            callback(k, x.copy(), f_x, grad.copy(), norm_grad)
+            callback(k, x.copy(), f_x, grad.copy(), norm_grad, alpha)
 
         if norm_grad < tol:
             break
