@@ -12,3 +12,13 @@ __pycache__/
 # Archivos de sistema
 .DS_Store
 Thumbs.db
+
+# PyInstaller
+dist/
+build/
+__pycache__/
+*.spec
+*.exe
+*.pyc
+*.pyo
+*.pyd
