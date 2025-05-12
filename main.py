@@ -82,6 +82,13 @@ class OptimizerApp(tk.Tk):
         self.method_combo.set("Gradient Descent")
         self.method_combo.grid(row=4, column=1, pady=5)
 
+        ttk.Label(self.content_frame, text="Max Iterations:").grid(
+            row=4, column=2, sticky="w"
+        )
+        self.max_iter_entry = ttk.Entry(self.content_frame)
+        self.max_iter_entry.insert(0, "100")
+        self.max_iter_entry.grid(row=4, column=3, pady=5)
+
         ttk.Label(self.content_frame, text="Learning Rate:").grid(
             row=5, column=0, sticky="w"
         )
@@ -144,6 +151,7 @@ class OptimizerApp(tk.Tk):
             x0 = np.array([float(val) for val in self.x0_entry.get().split(",")])
             tol = float(self.tol_entry.get())
             learning_rate = float(self.lr_entry.get())
+            max_iter = int(self.max_iter_entry.get())
 
             logger = OptimizerLogger()
             logger.reset()  # por si se ejecuta múltiples veces
@@ -175,6 +183,7 @@ class OptimizerApp(tk.Tk):
                     wrapped_grad_f,
                     x0,
                     tol=tol,
+                    max_iter=max_iter,
                     line_search=line_search,
                     callback=logger,
                 )
@@ -184,6 +193,7 @@ class OptimizerApp(tk.Tk):
                     wrapped_grad_f,
                     x0,
                     tol=tol,
+                    max_iter=max_iter,
                     learning_rate=learning_rate,
                     callback=logger,
                 )
@@ -193,6 +203,7 @@ class OptimizerApp(tk.Tk):
                     wrapped_grad_f,
                     x0,
                     tol=tol,
+                    max_iter=max_iter,
                     learning_rate=learning_rate,
                     callback=logger,
                 )
@@ -202,6 +213,7 @@ class OptimizerApp(tk.Tk):
                     wrapped_grad_f,
                     x0,
                     tol=tol,
+                    max_iter=max_iter,
                     line_search=line_search,
                     callback=logger,
                 )
