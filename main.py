@@ -255,8 +255,10 @@ class OptimizerApp(tk.Tk):
             self.ax2.grid(True)
             self.canvas2.draw()
 
+            solution_text = f"Punto óptimo encontrado: {np.round(x_opt, 6)}"
             self.stats_label.config(
-                text=f"⏱️ Time: {elapsed:.4f}s | f(x) calls: {eval_count['f']} | ∇f(x) calls: {eval_count['grad']}"
+                text=solution_text
+                + f"\n⏱️ Time: {elapsed:.4f}s | f(x) calls: {eval_count['f']} | ∇f(x) calls: {eval_count['grad']}"
             )
 
         except Exception as e:
