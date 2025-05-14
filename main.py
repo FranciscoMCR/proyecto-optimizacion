@@ -18,7 +18,7 @@ class OptimizerApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Optimization Playground")
-        self.geometry("880x600")
+        self.geometry("890x600")
         
         self.tk.call("source", "azure/azure.tcl")
         self.tk.call("set_theme", "light")
@@ -31,13 +31,12 @@ class OptimizerApp(tk.Tk):
         self.scrollbar = ttk.Scrollbar(
             self.container, orient="vertical", command=self.canvas_container.yview
         )
+        self.canvas_container.bind_all("<MouseWheel>", self.on_mousewheel)
         self.scrollbar.pack(side="right", fill="y")
-        self.canvas_container.pack(side="left", fill="both", expand=True)
+        self.canvas_container.pack(side="left", fill="both", expand=True, padx=10, pady=5)
         self.canvas_container.configure(yscrollcommand=self.scrollbar.set)
         
-        self.canvas_container.bind("<MouseWheel>", self.on_mousewheel)
-        self.canvas_container.bind("<Button-4>", self.on_mousewheel)
-        self.canvas_container.bind("<Button-5>", self.on_mousewheel)
+        
 
         # Frame dentro del canvas
         self.content_frame = ttk.Frame(self.canvas_container)
