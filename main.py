@@ -19,6 +19,9 @@ class OptimizerApp(tk.Tk):
         super().__init__()
         self.title("Optimization Playground")
         self.geometry("800x600")
+        
+        self.tk.call("source", "azure/azure.tcl")
+        self.tk.call("set_theme", "light")
 
         # Canvas + Scrollbar
         self.container = ttk.Frame(self)
@@ -31,6 +34,10 @@ class OptimizerApp(tk.Tk):
         self.scrollbar.pack(side="right", fill="y")
         self.canvas_container.pack(side="left", fill="both", expand=True)
         self.canvas_container.configure(yscrollcommand=self.scrollbar.set)
+        
+        self.canvas_container.bind("<MouseWheel>", self.on_mousewheel)
+        self.canvas_container.bind("<Button-4>", self.on_mousewheel)
+        self.canvas_container.bind("<Button-5>", self.on_mousewheel)
 
         # Frame dentro del canvas
         self.content_frame = ttk.Frame(self.canvas_container)
@@ -52,7 +59,7 @@ class OptimizerApp(tk.Tk):
         )
         self.func_entry = ttk.Entry(self.content_frame, width=50)
         self.func_entry.insert(0, "x**2 + y**2")
-        self.func_entry.grid(row=0, column=1, columnspan=3, pady=5)
+        self.func_entry.grid(row=0, column=1, columnspan=3, pady=5, sticky="w")
 
         ttk.Label(self.content_frame, text="Variables:").grid(
             row=1, column=0, sticky="w"
@@ -141,6 +148,17 @@ class OptimizerApp(tk.Tk):
 
         self.stats_label = ttk.Label(self.content_frame, text="")
         self.stats_label.grid(row=11, column=0, columnspan=4, pady=10)
+        
+    def on_mousewheel(self, event):
+        # Para Windows y Mac
+        if event.delta:
+            self.canvas_container.yview_scroll(int(-1*(event.delta/120)), "units")
+        # Para Linux
+        else:
+            if event.num == 4:
+                self.canvas_container.yview_scroll(-1, "units")
+            elif event.num == 5:
+                self.canvas_container.yview_scroll(1, "units")
 
     def run_optimization(self):
         try:
