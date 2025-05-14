@@ -18,7 +18,7 @@ class OptimizerApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Optimization Playground")
-        self.geometry("800x600")
+        self.geometry("880x600")
         
         self.tk.call("source", "azure/azure.tcl")
         self.tk.call("set_theme", "light")
@@ -66,10 +66,10 @@ class OptimizerApp(tk.Tk):
         )
         self.vars_entry = ttk.Entry(self.content_frame)
         self.vars_entry.insert(0, "x,y")
-        self.vars_entry.grid(row=1, column=1, sticky="ew", pady=5)
+        self.vars_entry.grid(row=1, column=1, sticky="w", pady=5)
 
         ttk.Label(self.content_frame, text="Initial Point:").grid(
-            row=2, column=0, sticky="w"
+            row=2, column=0, sticky="w", pady=5
         )
         self.x0_entry = ttk.Entry(self.content_frame)
         self.x0_entry.insert(0, "3,4")
@@ -90,11 +90,11 @@ class OptimizerApp(tk.Tk):
         self.method_combo.grid(row=4, column=1, pady=5)
 
         ttk.Label(self.content_frame, text="Max Iterations:").grid(
-            row=4, column=2, sticky="w"
+            row=7, column=0, sticky="w"
         )
         self.max_iter_entry = ttk.Entry(self.content_frame)
         self.max_iter_entry.insert(0, "100")
-        self.max_iter_entry.grid(row=4, column=3, pady=5)
+        self.max_iter_entry.grid(row=7, column=1, pady=5)
 
         ttk.Label(self.content_frame, text="Learning Rate:").grid(
             row=5, column=0, sticky="w"
@@ -116,11 +116,11 @@ class OptimizerApp(tk.Tk):
             self.content_frame, text="Run", command=self.run_optimization
         )
 
-        self.run_button.grid(row=7, column=0, columnspan=2, pady=10)
+        self.run_button.grid(row=8, column=0, columnspan=2, pady=10)
         self.plot3d_button = ttk.Button(
             self.content_frame, text="Show 3D Plot", command=self.on_show_3d_plot
         )
-        self.plot3d_button.grid(row=7, column=2, columnspan=2, pady=10)
+        self.plot3d_button.grid(row=8, column=2, columnspan=2, pady=10)
 
         columns = ("iter", "f_x", "norm_grad", "alpha")
         self.tree = ttk.Treeview(
@@ -128,7 +128,7 @@ class OptimizerApp(tk.Tk):
         )
         for col in columns:
             self.tree.heading(col, text=col)
-        self.tree.grid(row=8, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
+        self.tree.grid(row=9, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
 
         self.grid_columnconfigure(1, weight=1)
 
@@ -136,18 +136,18 @@ class OptimizerApp(tk.Tk):
         self.ax = self.figure.add_subplot(111)
         self.canvas = FigureCanvasTkAgg(self.figure, self.content_frame)
         self.canvas.get_tk_widget().grid(
-            row=9, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
+            row=11, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
         )
 
         self.figure2 = plt.Figure(figsize=(6, 2.5), dpi=100)
         self.ax2 = self.figure2.add_subplot(111)
         self.canvas2 = FigureCanvasTkAgg(self.figure2, self.content_frame)
         self.canvas2.get_tk_widget().grid(
-            row=10, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
+            row=12, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
         )
 
         self.stats_label = ttk.Label(self.content_frame, text="")
-        self.stats_label.grid(row=11, column=0, columnspan=4, pady=10)
+        self.stats_label.grid(row=13, column=0, columnspan=4, pady=10)
         
     def on_mousewheel(self, event):
         # Para Windows y Mac
