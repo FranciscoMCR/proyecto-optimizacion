@@ -36,8 +36,6 @@ class OptimizerApp(tk.Tk):
         self.canvas_container.pack(side="left", fill="both", expand=True, padx=10, pady=5)
         self.canvas_container.configure(yscrollcommand=self.scrollbar.set)
         
-        
-
         # Frame dentro del canvas
         self.content_frame = ttk.Frame(self.canvas_container)
         self.canvas_container.create_window(
@@ -52,82 +50,90 @@ class OptimizerApp(tk.Tk):
 
         self.create_widgets()
 
-    def create_widgets(self):
-        ttk.Label(self.content_frame, text="Function (f):").grid(
+    def create_widgets(self): 
+        self.primary_frame = ttk.Frame(self.content_frame)
+        self.primary_frame.grid(column=0, row=0)
+        ttk.Label(self.primary_frame, text="Function (f):").grid(
             row=0, column=0, sticky="w"
         )
-        self.func_entry = ttk.Entry(self.content_frame, width=50)
+        self.func_entry = ttk.Entry(self.primary_frame, width=50)
         self.func_entry.insert(0, "x**2 + y**2")
-        self.func_entry.grid(row=0, column=1, columnspan=3, pady=5, sticky="w")
+        self.func_entry.grid(row=0, column=1, columnspan=3, pady=5)
 
-        ttk.Label(self.content_frame, text="Variables:").grid(
+        ttk.Label(self.primary_frame, text="Variables:").grid(
             row=1, column=0, sticky="w"
         )
-        self.vars_entry = ttk.Entry(self.content_frame)
+        self.vars_entry = ttk.Entry(self.primary_frame)
         self.vars_entry.insert(0, "x,y")
-        self.vars_entry.grid(row=1, column=1, sticky="w", pady=5)
+        self.vars_entry.grid(row=1, column=1, pady=5)
 
-        ttk.Label(self.content_frame, text="Initial Point:").grid(
+        ttk.Label(self.primary_frame, text="Initial Point:").grid(
             row=2, column=0, sticky="w", pady=5
         )
-        self.x0_entry = ttk.Entry(self.content_frame)
+        self.x0_entry = ttk.Entry(self.primary_frame)
         self.x0_entry.insert(0, "3,4")
         self.x0_entry.grid(row=2, column=1, pady=5)
 
-        ttk.Label(self.content_frame, text="Tolerance:").grid(
+        ttk.Label(self.primary_frame, text="Tolerance:").grid(
             row=3, column=0, sticky="w"
         )
-        self.tol_entry = ttk.Entry(self.content_frame)
+        self.tol_entry = ttk.Entry(self.primary_frame)
         self.tol_entry.insert(0, "1e-6")
         self.tol_entry.grid(row=3, column=1, pady=5)
 
-        ttk.Label(self.content_frame, text="Method:").grid(row=4, column=0, sticky="w")
+        ttk.Label(self.primary_frame, text="Method:").grid(row=4, column=0, sticky="w")
         self.method_combo = ttk.Combobox(
-            self.content_frame, values=["Gradient Descent", "BFGS", "Adam", "SGD"]
+            self.primary_frame, values=["Gradient Descent", "BFGS", "Adam", "SGD"]
         )
         self.method_combo.set("Gradient Descent")
         self.method_combo.grid(row=4, column=1, pady=5)
 
-        ttk.Label(self.content_frame, text="Max Iterations:").grid(
+        ttk.Label(self.primary_frame, text="Max Iterations:").grid(
             row=7, column=0, sticky="w"
         )
-        self.max_iter_entry = ttk.Entry(self.content_frame)
+        self.max_iter_entry = ttk.Entry(self.primary_frame)
         self.max_iter_entry.insert(0, "100")
         self.max_iter_entry.grid(row=7, column=1, pady=5)
 
-        ttk.Label(self.content_frame, text="Learning Rate:").grid(
+        ttk.Label(self.primary_frame, text="Learning Rate:").grid(
             row=5, column=0, sticky="w"
         )
-        self.lr_entry = ttk.Entry(self.content_frame)
+        self.lr_entry = ttk.Entry(self.primary_frame)
         self.lr_entry.insert(0, "0.01")
         self.lr_entry.grid(row=5, column=1, pady=5)
 
-        ttk.Label(self.content_frame, text="Line Search:").grid(
+        ttk.Label(self.primary_frame, text="Line Search:").grid(
             row=6, column=0, sticky="w"
         )
         self.search_combo = ttk.Combobox(
-            self.content_frame, values=["None", "Armijo", "Wolfe"]
+            self.primary_frame, values=["None", "Armijo", "Wolfe"]
         )
         self.search_combo.set("None")
         self.search_combo.grid(row=6, column=1, pady=5)
 
         self.run_button = ttk.Button(
-            self.content_frame, text="Run", command=self.run_optimization
+            self.primary_frame, text="Run", command=self.run_optimization
         )
 
         self.run_button.grid(row=8, column=0, columnspan=2, pady=10)
         self.plot3d_button = ttk.Button(
-            self.content_frame, text="Show 3D Plot", command=self.on_show_3d_plot
+            self.primary_frame, text="Show 3D Plot", command=self.on_show_3d_plot
         )
         self.plot3d_button.grid(row=8, column=2, columnspan=2, pady=10)
-
+        
+        self.secondary_frame = ttk.Frame(self.content_frame)
+        self.secondary_frame.grid(column=4, row=0)
+        
+        ttk.Label(self.secondary_frame, text="Iterations:", font=("Arial", 12, "bold") ).grid(
+            row=1, column=0, sticky="w", padx=5
+        )
         columns = ("iter", "f_x", "norm_grad", "alpha")
         self.tree = ttk.Treeview(
-            self.content_frame, columns=columns, show="headings", height=20
+            self.secondary_frame, columns=columns, show="headings", height=20
         )
         for col in columns:
             self.tree.heading(col, text=col)
-        self.tree.grid(row=9, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
+        self.tree.grid(row=2, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
 
         self.grid_columnconfigure(1, weight=1)
 
@@ -149,15 +155,24 @@ class OptimizerApp(tk.Tk):
         self.stats_label.grid(row=13, column=0, columnspan=4, pady=10)
         
     def on_mousewheel(self, event):
-        # Para Windows y Mac
-        if event.delta:
-            self.canvas_container.yview_scroll(int(-1*(event.delta/120)), "units")
-        # Para Linux
+        widget = event.widget
+        # Determinar dirección del scroll
+        if hasattr(event, 'delta'):  # Windows/Mac
+            delta = -1 * (event.delta // 120)
+        elif event.num == 4:  # Linux (scroll up)
+            delta = -1
+        elif event.num == 5:  # Linux (scroll down)
+            delta = 1
         else:
-            if event.num == 4:
-                self.canvas_container.yview_scroll(-1, "units")
-            elif event.num == 5:
-                self.canvas_container.yview_scroll(1, "units")
+            return
+            
+        # Aplicar scroll al widget adecuado
+        if widget.winfo_class() == 'Treeview':
+            widget.yview_scroll(delta, "units")
+            return "break"  # Evitar propagación        
+        else:
+            self.canvas_container.yview_scroll(delta, "units")
+        
 
     def run_optimization(self):
         try:
