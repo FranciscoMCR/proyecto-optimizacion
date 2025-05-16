@@ -22,7 +22,6 @@ class OptimizerApp(tk.Tk):
         screen_height = self.winfo_screenheight()
         self.geometry(f"{screen_width-100}x{screen_height-100}")
         self.state('zoomed')
-        #self.geometry("890x600")
         
         self.tk.call("source", "azure/azure.tcl")
         self.tk.call("set_theme", "light")
@@ -45,7 +44,7 @@ class OptimizerApp(tk.Tk):
                 "General.TFrame", 
                background="#F3F3F3",
         )
-        self.content_frame = ttk.Frame(self.canvas_container, style="General.TFrame")
+        self.content_frame = ttk.Frame(self.canvas_container, style="General.TFrame", padding=10)
         self.canvas_container.create_window(
             (0, 0), window=self.content_frame, anchor="nw"
         )
@@ -68,7 +67,7 @@ class OptimizerApp(tk.Tk):
         
         self.primary_frame = ttk.Frame(self.content_frame, style="Borde.TFrame", padding=10)
         
-        self.primary_frame.grid(column=0, row=0)
+        self.primary_frame.grid(column=0, row=0, sticky='n')
         ttk.Label(self.primary_frame, text="Parameters:", font=("Arial", 12, "bold") ).grid(
             row=0, column=0, sticky="w"
         )
@@ -141,37 +140,40 @@ class OptimizerApp(tk.Tk):
         self.plot3d_button.grid(row=9, column=2, columnspan=2, pady=10)
         
         self.secondary_frame = ttk.Frame(self.content_frame, style="Borde.TFrame", padding=10)
-        self.secondary_frame.grid(column=4, row=0)
+        self.secondary_frame.grid(column=3, row=0, padx=53)
         
         ttk.Label(self.secondary_frame, text="Iterations:", font=("Arial", 12, "bold") ).grid(
             row=1, column=0, sticky="w", padx=5
         )
         columns = ("iter", "f_x", "norm_grad", "alpha")
         self.tree = ttk.Treeview(
-            self.secondary_frame, columns=columns, show="headings", height=20
+            self.secondary_frame, columns=columns, show="headings", height=15
         )
         for col in columns:
             self.tree.heading(col, text=col)
         self.tree.grid(row=2, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
 
         self.grid_columnconfigure(1, weight=1)
+        
+        self.terciary_frame = ttk.Frame(self.content_frame, style="Borde.TFrame", padding=10)
+        self.terciary_frame.grid(column=0, columnspan=4, row=2, pady=10)
 
         self.figure = plt.Figure(figsize=(6, 2.5), dpi=100)
         self.ax = self.figure.add_subplot(111)
-        self.canvas = FigureCanvasTkAgg(self.figure, self.content_frame)
+        self.canvas = FigureCanvasTkAgg(self.figure, self.terciary_frame)
         self.canvas.get_tk_widget().grid(
-            row=11, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
+            row=0, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
         )
 
         self.figure2 = plt.Figure(figsize=(6, 2.5), dpi=100)
         self.ax2 = self.figure2.add_subplot(111)
-        self.canvas2 = FigureCanvasTkAgg(self.figure2, self.content_frame)
+        self.canvas2 = FigureCanvasTkAgg(self.figure2, self.terciary_frame)
         self.canvas2.get_tk_widget().grid(
-            row=11, column=4, columnspan=4, padx=10, pady=10, sticky="nsew"
+            row=0, column=4, columnspan=4, padx=10, pady=10, sticky="nsew"
         )
 
-        self.stats_label = ttk.Label(self.content_frame, text="")
-        self.stats_label.grid(row=13, column=1, columnspan=4, pady=10)
+        self.stats_label = ttk.Label(self.terciary_frame, text="")
+        self.stats_label.grid(row=1, column=2, columnspan=4, pady=10, )
         
     def on_mousewheel(self, event):
         widget = event.widget
