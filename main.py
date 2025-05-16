@@ -18,7 +18,11 @@ class OptimizerApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Optimization Playground")
-        self.geometry("890x600")
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        self.geometry(f"{screen_width-100}x{screen_height-100}")
+        self.state('zoomed')
+        #self.geometry("890x600")
         
         self.tk.call("source", "azure/azure.tcl")
         self.tk.call("set_theme", "light")
@@ -37,7 +41,11 @@ class OptimizerApp(tk.Tk):
         self.canvas_container.configure(yscrollcommand=self.scrollbar.set)
         
         # Frame dentro del canvas
-        self.content_frame = ttk.Frame(self.canvas_container)
+        style = ttk.Style().configure(
+                "General.TFrame", 
+               background="#F3F3F3",
+        )
+        self.content_frame = ttk.Frame(self.canvas_container, style="General.TFrame")
         self.canvas_container.create_window(
             (0, 0), window=self.content_frame, anchor="nw"
         )
@@ -51,77 +59,88 @@ class OptimizerApp(tk.Tk):
         self.create_widgets()
 
     def create_widgets(self): 
-        self.primary_frame = ttk.Frame(self.content_frame)
+        style = ttk.Style().configure(
+                "Borde.TFrame", 
+               background="#FFFFFF",  # Fondo dorado
+               borderwidth=2,        # Grosor del borde
+               relief="solid",
+               )
+        
+        self.primary_frame = ttk.Frame(self.content_frame, style="Borde.TFrame", padding=10)
+        
         self.primary_frame.grid(column=0, row=0)
-        ttk.Label(self.primary_frame, text="Function (f):").grid(
+        ttk.Label(self.primary_frame, text="Parameters:", font=("Arial", 12, "bold") ).grid(
             row=0, column=0, sticky="w"
+        )
+        ttk.Label(self.primary_frame, text="Function (f):").grid(
+            row=1, column=0, sticky="w"
         )
         self.func_entry = ttk.Entry(self.primary_frame, width=50)
         self.func_entry.insert(0, "x**2 + y**2")
-        self.func_entry.grid(row=0, column=1, columnspan=3, pady=5)
+        self.func_entry.grid(row=1, column=1, columnspan=3, pady=5)
 
         ttk.Label(self.primary_frame, text="Variables:").grid(
-            row=1, column=0, sticky="w"
+            row=2, column=0, sticky="w"
         )
         self.vars_entry = ttk.Entry(self.primary_frame)
         self.vars_entry.insert(0, "x,y")
-        self.vars_entry.grid(row=1, column=1, pady=5)
+        self.vars_entry.grid(row=2, column=1, pady=5)
 
         ttk.Label(self.primary_frame, text="Initial Point:").grid(
-            row=2, column=0, sticky="w", pady=5
+            row=3, column=0, sticky="w", pady=5
         )
         self.x0_entry = ttk.Entry(self.primary_frame)
         self.x0_entry.insert(0, "3,4")
-        self.x0_entry.grid(row=2, column=1, pady=5)
+        self.x0_entry.grid(row=3, column=1, pady=5)
 
         ttk.Label(self.primary_frame, text="Tolerance:").grid(
-            row=3, column=0, sticky="w"
+            row=4, column=0, sticky="w"
         )
         self.tol_entry = ttk.Entry(self.primary_frame)
         self.tol_entry.insert(0, "1e-6")
-        self.tol_entry.grid(row=3, column=1, pady=5)
+        self.tol_entry.grid(row=4, column=1, pady=5)
 
-        ttk.Label(self.primary_frame, text="Method:").grid(row=4, column=0, sticky="w")
+        ttk.Label(self.primary_frame, text="Method:").grid(row=5, column=0, sticky="w")
         self.method_combo = ttk.Combobox(
             self.primary_frame, values=["Gradient Descent", "BFGS", "Adam", "SGD"]
         )
         self.method_combo.set("Gradient Descent")
-        self.method_combo.grid(row=4, column=1, pady=5)
+        self.method_combo.grid(row=5, column=1, pady=5)
 
         ttk.Label(self.primary_frame, text="Max Iterations:").grid(
-            row=7, column=0, sticky="w"
+            row=8, column=0, sticky="w"
         )
         self.max_iter_entry = ttk.Entry(self.primary_frame)
         self.max_iter_entry.insert(0, "100")
-        self.max_iter_entry.grid(row=7, column=1, pady=5)
+        self.max_iter_entry.grid(row=8, column=1, pady=5)
 
         ttk.Label(self.primary_frame, text="Learning Rate:").grid(
-            row=5, column=0, sticky="w"
+            row=6, column=0, sticky="w"
         )
         self.lr_entry = ttk.Entry(self.primary_frame)
         self.lr_entry.insert(0, "0.01")
-        self.lr_entry.grid(row=5, column=1, pady=5)
+        self.lr_entry.grid(row=6, column=1, pady=5)
 
         ttk.Label(self.primary_frame, text="Line Search:").grid(
-            row=6, column=0, sticky="w"
+            row=7, column=0, sticky="w"
         )
         self.search_combo = ttk.Combobox(
             self.primary_frame, values=["None", "Armijo", "Wolfe"]
         )
         self.search_combo.set("None")
-        self.search_combo.grid(row=6, column=1, pady=5)
+        self.search_combo.grid(row=7, column=1, pady=5)
 
         self.run_button = ttk.Button(
             self.primary_frame, text="Run", command=self.run_optimization
         )
 
-        self.run_button.grid(row=8, column=0, columnspan=2, pady=10)
+        self.run_button.grid(row=9, column=0, columnspan=2, pady=10)
         self.plot3d_button = ttk.Button(
             self.primary_frame, text="Show 3D Plot", command=self.on_show_3d_plot
         )
-        self.plot3d_button.grid(row=8, column=2, columnspan=2, pady=10)
+        self.plot3d_button.grid(row=9, column=2, columnspan=2, pady=10)
         
-        self.secondary_frame = ttk.Frame(self.content_frame)
+        self.secondary_frame = ttk.Frame(self.content_frame, style="Borde.TFrame", padding=10)
         self.secondary_frame.grid(column=4, row=0)
         
         ttk.Label(self.secondary_frame, text="Iterations:", font=("Arial", 12, "bold") ).grid(
@@ -148,28 +167,27 @@ class OptimizerApp(tk.Tk):
         self.ax2 = self.figure2.add_subplot(111)
         self.canvas2 = FigureCanvasTkAgg(self.figure2, self.content_frame)
         self.canvas2.get_tk_widget().grid(
-            row=12, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
+            row=11, column=4, columnspan=4, padx=10, pady=10, sticky="nsew"
         )
 
         self.stats_label = ttk.Label(self.content_frame, text="")
-        self.stats_label.grid(row=13, column=0, columnspan=4, pady=10)
+        self.stats_label.grid(row=13, column=1, columnspan=4, pady=10)
         
     def on_mousewheel(self, event):
         widget = event.widget
-        # Determinar dirección del scroll
-        if hasattr(event, 'delta'):  # Windows/Mac
+
+        if hasattr(event, 'delta'):
             delta = -1 * (event.delta // 120)
-        elif event.num == 4:  # Linux (scroll up)
+        elif event.num == 4:
             delta = -1
-        elif event.num == 5:  # Linux (scroll down)
+        elif event.num == 5:
             delta = 1
         else:
             return
             
-        # Aplicar scroll al widget adecuado
         if widget.winfo_class() == 'Treeview':
             widget.yview_scroll(delta, "units")
-            return "break"  # Evitar propagación        
+            return "break"
         else:
             self.canvas_container.yview_scroll(delta, "units")
         
