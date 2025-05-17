@@ -34,10 +34,15 @@ class OptimizerApp(tk.Tk):
         self.scrollbar = ttk.Scrollbar(
             self.container, orient="vertical", command=self.canvas_container.yview
         )
+        self.scrollbar_x = ttk.Scrollbar(
+            self.container, orient="horizontal", command=self.canvas_container.xview
+        )
         self.canvas_container.bind_all("<MouseWheel>", self.on_mousewheel)
         self.scrollbar.pack(side="right", fill="y")
+        self.scrollbar_x.pack(side="bottom", fill="x")
         self.canvas_container.pack(side="left", fill="both", expand=True, padx=10, pady=5)
         self.canvas_container.configure(yscrollcommand=self.scrollbar.set)
+        self.canvas_container.configure(xscrollcommand=self.scrollbar_x.set)
         
         # Frame dentro del canvas
         style = ttk.Style().configure(
