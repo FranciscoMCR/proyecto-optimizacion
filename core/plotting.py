@@ -4,7 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from sympy import lambdify, symbols
 
 
-def show_3d_plot(root, func_str, variables, point=None):
+def show_3d_plot(root, func_str, variables, points=None):
     if len(variables) != 2:
         return
 
@@ -31,11 +31,26 @@ def show_3d_plot(root, func_str, variables, point=None):
     ax.set_ylabel(variables[1])
     ax.set_zlabel("f(x, y)")
     
-    if point is not None:
-        x_point, y_point = point
-        z_point = f_lambdified(x_point, y_point)
-        ax.scatter(x_point, y_point, z_point, color='red', s=50, label=f'Optimal point \n[{x_point:.6f}, {y_point:.6f}]')
-        ax.legend(loc='lower center', bbox_to_anchor=(0.5, -0.1), borderaxespad=0.1)
+    if points is not None:
+        points = np.array(points)  # Asegurar que es un array numpy
+
+        percent_to_show = 0.6  # 60% de los puntos más recientes
+        
+        total_points = len(points[0])
+        num_points_to_show = int(total_points * percent_to_show)
+        
+        x_points = points[0][-num_points_to_show:]
+        y_points = points[1][-num_points_to_show:]
+        z_points = f_lambdified(x_points, y_points)
+        
+        valid_mask = (x_points >= -5) & (x_points <= 5) & (y_points >= -5) & (y_points <= 5)
+        x_points = x_points[valid_mask]
+        y_points = y_points[valid_mask]
+        z_points = z_points[valid_mask]
+        
+        # Graficar todos los puntos
+        scatter = ax.scatter(x_points, y_points, z_points, 
+                           color='red', s=50, label='Puntos óptimos')
     
     # Mostrar en ventana aparte
     import tkinter as tk
