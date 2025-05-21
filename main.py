@@ -311,7 +311,8 @@ class OptimizerApp(tk.Tk):
             self.ax2.set_ylabel("‖∇f‖")
             self.ax2.grid(True)
             self.canvas2.draw()
-
+            
+            self.optimal_point = x_opt
             solution_text = f"Punto óptimo encontrado: {np.round(x_opt, 6)}"
             self.stats_label.config(
                 text=solution_text
@@ -324,7 +325,7 @@ class OptimizerApp(tk.Tk):
     def on_show_3d_plot(self):
         func_str = self.func_entry.get()
         variables = [v.strip() for v in self.vars_entry.get().split(",")]
-        show_3d_plot(self, func_str, variables)
+        show_3d_plot(self, func_str, variables, self.optimal_point)
 
 
 if __name__ == "__main__":
