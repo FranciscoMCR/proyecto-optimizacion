@@ -49,8 +49,8 @@ def show_3d_plot(root, func_str, variables, points=None):
         z_points = z_points[valid_mask]
         
         # Graficar todos los puntos
-        scatter = ax.scatter(x_points, y_points, z_points, 
-                           color='red', s=50, label='Puntos óptimos')
+        ax.scatter(x_points, y_points, z_points, color='red', s=50, label='Points by Iteration')
+        ax.legend(loc='lower center', bbox_to_anchor=(0.5, -0.1), ncol=1, borderaxespad=0.5)
     
     # Mostrar en ventana aparte
     import tkinter as tk

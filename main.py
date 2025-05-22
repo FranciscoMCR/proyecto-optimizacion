@@ -333,7 +333,7 @@ class OptimizerApp(tk.Tk):
             x = [log["f_x"] for log in logger.get_log()]
             y = [log['norm_grad'] for log in logger.get_log()]
 
-            self.optimal_point = [x, y]
+            self.iteration_points = [x, y]
             self.point = np.round(x_opt, 6)
             solution_text = f"Punto óptimo encontrado: {np.round(x_opt, 6)}"
             self.stats_label.config(
@@ -354,8 +354,8 @@ class OptimizerApp(tk.Tk):
         func_str = self.func_entry.get()
         variables = [v.strip() for v in self.vars_entry.get().split(",")]
         
-        if hasattr(self, 'optimal_point'):
-            show_3d_plot(self, func_str, variables, self.optimal_point)
+        if hasattr(self, 'iteration_points'):
+            show_3d_plot(self, func_str, variables, self.iteration_points)
     
     def on_show_contour_plot(self):
         func_str = self.func_entry.get()
