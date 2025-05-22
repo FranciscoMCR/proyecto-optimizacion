@@ -170,7 +170,7 @@ class OptimizerApp(tk.Tk):
         )
         columns = ("iter", "f_x", "norm_grad", "alpha")
         self.tree = ttk.Treeview(
-            self.secondary_frame, columns=columns, show="headings", height=15
+            self.secondary_frame, columns=columns, show="headings", height=19
         )
         for col in columns:
             self.tree.heading(col, text=col)
