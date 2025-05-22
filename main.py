@@ -63,12 +63,20 @@ class OptimizerApp(tk.Tk):
         self.create_widgets()
 
     def create_widgets(self): 
-        style = ttk.Style().configure(
-                "Borde.TFrame", 
-               background="#FFFFFF",  # Fondo dorado
-               borderwidth=2,        # Grosor del borde
-               relief="solid",
-               )
+        style = ttk.Style()
+        
+        style.configure(
+            "Borde.TFrame", 
+            background="#FFFFFF",  # Fondo dorado
+            borderwidth=2,        # Grosor del borde
+            relief="solid",
+            )
+        
+        """ style.configure(
+            "Run.TButton",
+            background="#007FFF",
+            foreground="white",
+            ) """
         
         self.primary_frame = ttk.Frame(self.content_frame, style="Borde.TFrame", padding=10)
         
@@ -133,9 +141,9 @@ class OptimizerApp(tk.Tk):
         )
         self.search_combo.set("None")
         self.search_combo.grid(row=7, column=1, pady=5)
-
+        
         self.run_button = ttk.Button(
-            self.primary_frame, text="Run", command=self.run_optimization
+            self.primary_frame, text="Run", command=self.run_optimization,
         )
 
         self.run_button.grid(row=9, column=0, columnspan=2, pady=10)
@@ -145,9 +153,9 @@ class OptimizerApp(tk.Tk):
         self.plot3d_button.grid(row=9, column=2, columnspan=2, pady=10)
         
         self.plot3d_contour_button = ttk.Button(
-            self.primary_frame, text="Show Contour 3D Plot", command=self.on_show_contour_plot
+            self.primary_frame, text="Show Contour \n     3D Plot", command=self.on_show_contour_plot
         )
-        self.plot3d_contour_button.grid(row=10, column=1, columnspan=2, pady=10)
+        self.plot3d_contour_button.grid(row=10, column=0, columnspan=2, pady=10)
         
         self.plot3d_button_wpoints = ttk.Button(
             self.primary_frame, text="Show 3D Plot \n  With Points", command=self.on_show_3d_plot_points
