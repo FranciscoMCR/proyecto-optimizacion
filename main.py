@@ -10,7 +10,7 @@ from core.gradients import symbolic_function, symbolic_gradient
 from core.line_search import armijo_backtracking, wolfe_line_search
 from core.logger import OptimizerLogger
 from core.optimizers import adam, bfgs, gradient_descent
-from core.plotting import show_3d_plot
+from core.plotting import show_3d_plot, contour_plot
 from core.stochastic import stochastic_gradient_descent
 
 
@@ -143,6 +143,11 @@ class OptimizerApp(tk.Tk):
             self.primary_frame, text="Show 3D Plot", command=self.on_show_3d_plot
         )
         self.plot3d_button.grid(row=9, column=2, columnspan=2, pady=10)
+        
+        self.plot3d_contour_button = ttk.Button(
+            self.primary_frame, text="Show Contour 3D Plot", command=self.on_show_contour_plot
+        )
+        self.plot3d_contour_button.grid(row=10, column=1, columnspan=2, pady=10)
         
         self.plot3d_button_wpoints = ttk.Button(
             self.primary_frame, text="Show 3D Plot \n  With Points", command=self.on_show_3d_plot_points
@@ -321,6 +326,7 @@ class OptimizerApp(tk.Tk):
             y = [log['norm_grad'] for log in logger.get_log()]
 
             self.optimal_point = [x, y]
+            self.point = np.round(x_opt, 6)
             solution_text = f"Punto óptimo encontrado: {np.round(x_opt, 6)}"
             self.stats_label.config(
                 text=solution_text
@@ -342,6 +348,15 @@ class OptimizerApp(tk.Tk):
         
         if hasattr(self, 'optimal_point'):
             show_3d_plot(self, func_str, variables, self.optimal_point)
+    
+    def on_show_contour_plot(self):
+        func_str = self.func_entry.get()
+        variables = [v.strip() for v in self.vars_entry.get().split(",")]
+        
+        if hasattr(self, 'point'):
+            contour_plot(self, func_str, variables, self.point)
+        else:
+            contour_plot(self, func_str, variables)
 
 if __name__ == "__main__":
     app = OptimizerApp()

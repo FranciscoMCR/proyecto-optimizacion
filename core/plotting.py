@@ -62,3 +62,45 @@ def show_3d_plot(root, func_str, variables, points=None):
     canvas = FigureCanvasTkAgg(fig, master=window)
     canvas.draw()
     canvas.get_tk_widget().pack(fill="both", expand=True)
+
+def contour_plot(root, func_str, variables, point=None):
+    if len(variables) != 2:
+        return
+    
+    x_sym, y_sym = symbols(variables)
+    f_lambdified = lambdify((x_sym, y_sym), func_str, "numpy")
+        
+    x_range = np.linspace(-10, 10, 100)
+    y_range = np.linspace(-10, 10, 100)
+    X, Y = np.meshgrid(x_range, y_range)
+    
+    try:
+        Z = f_lambdified(X, Y)
+    except Exception:
+        from tkinter import messagebox
+
+        messagebox.showerror("Error", "Could not evaluate the function.")
+        return
+
+    fig = plt.figure(figsize=(6, 4))
+    ax_contour = fig.add_subplot(111)
+    contour = ax_contour.contourf(X, Y, Z, levels=20, cmap='cividis')
+    ax_contour.set_xlabel('x1')
+    ax_contour.set_ylabel('x2')
+    ax_contour.set_title('Contour Map')
+    ax_contour.set_aspect('equal', adjustable='box')
+
+    if point is not None:
+        ax_contour.plot(point[0], point[1], 'ro', markersize=8, label=f'Optimal Point ({point[0]:.6f}, {point[1]:.6f})')
+        ax_contour.legend()
+    
+    # Mostrar en ventana aparte
+    import tkinter as tk
+
+    from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+    window = tk.Toplevel(root)
+    window.title("Contour Map Visualization")
+    canvas = FigureCanvasTkAgg(fig, master=window)
+    canvas.draw()
+    canvas.get_tk_widget().pack(fill="both", expand=True)
