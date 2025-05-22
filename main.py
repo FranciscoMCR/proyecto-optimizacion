@@ -144,6 +144,11 @@ class OptimizerApp(tk.Tk):
         )
         self.plot3d_button.grid(row=9, column=2, columnspan=2, pady=10)
         
+        self.plot3d_button_wpoints = ttk.Button(
+            self.primary_frame, text="Show 3D Plot \n  With Points", command=self.on_show_3d_plot_points
+        )
+        self.plot3d_button_wpoints.grid(row=10, column=2, columnspan=2, pady=10)
+        
         self.secondary_frame = ttk.Frame(self.content_frame, style="Borde.TFrame", padding=10)
         self.secondary_frame.grid(column=3, row=0, padx=53)
         
@@ -329,11 +334,14 @@ class OptimizerApp(tk.Tk):
         func_str = self.func_entry.get()
         variables = [v.strip() for v in self.vars_entry.get().split(",")]
         
+        show_3d_plot(self, func_str, variables)
+
+    def on_show_3d_plot_points(self):
+        func_str = self.func_entry.get()
+        variables = [v.strip() for v in self.vars_entry.get().split(",")]
+        
         if hasattr(self, 'optimal_point'):
             show_3d_plot(self, func_str, variables, self.optimal_point)
-        else:
-            show_3d_plot(self, func_str, variables)
-
 
 if __name__ == "__main__":
     app = OptimizerApp()
