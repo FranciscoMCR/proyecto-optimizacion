@@ -1,3 +1,5 @@
+import os
+import sys
 import time
 import tkinter as tk
 from tkinter import messagebox, ttk
@@ -10,7 +12,7 @@ from core.gradients import symbolic_function, symbolic_gradient
 from core.line_search import armijo_backtracking, wolfe_line_search
 from core.logger import OptimizerLogger
 from core.optimizers import adam, bfgs, gradient_descent
-from core.plotting import show_3d_plot, contour_plot
+from core.plotting import contour_plot, show_3d_plot
 from core.stochastic import stochastic_gradient_descent
 
 
@@ -21,9 +23,13 @@ class OptimizerApp(tk.Tk):
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         self.geometry(f"{screen_width-100}x{screen_height-100}")
-        self.state('zoomed')
-        
-        self.tk.call("source", "azure/azure.tcl")
+        self.state("zoomed")
+
+        if hasattr(sys, "_MEIPASS"):
+            theme_path = os.path.join(sys._MEIPASS, "azure", "azure.tcl")
+        else:
+            theme_path = os.path.join("azure", "azure.tcl")
+        self.tk.call("source", theme_path)
         self.tk.call("set_theme", "light")
 
         # Canvas + Scrollbar
@@ -40,16 +46,20 @@ class OptimizerApp(tk.Tk):
         self.canvas_container.bind_all("<MouseWheel>", self.on_mousewheel)
         self.scrollbar.pack(side="right", fill="y")
         self.scrollbar_x.pack(side="bottom", fill="x")
-        self.canvas_container.pack(side="left", fill="both", expand=True, padx=10, pady=5)
+        self.canvas_container.pack(
+            side="left", fill="both", expand=True, padx=10, pady=5
+        )
         self.canvas_container.configure(yscrollcommand=self.scrollbar.set)
         self.canvas_container.configure(xscrollcommand=self.scrollbar_x.set)
-        
+
         # Frame dentro del canvas
         style = ttk.Style().configure(
-                "General.TFrame", 
-               background="#F3F3F3",
+            "General.TFrame",
+            background="#F3F3F3",
         )
-        self.content_frame = ttk.Frame(self.canvas_container, style="General.TFrame", padding=10)
+        self.content_frame = ttk.Frame(
+            self.canvas_container, style="General.TFrame", padding=10
+        )
         self.canvas_container.create_window(
             (0, 0), window=self.content_frame, anchor="nw"
         )
@@ -62,28 +72,30 @@ class OptimizerApp(tk.Tk):
 
         self.create_widgets()
 
-    def create_widgets(self): 
+    def create_widgets(self):
         style = ttk.Style()
-        
+
         style.configure(
-            "Borde.TFrame", 
+            "Borde.TFrame",
             background="#FFFFFF",  # Fondo dorado
-            borderwidth=2,        # Grosor del borde
+            borderwidth=2,  # Grosor del borde
             relief="solid",
-            )
-        
+        )
+
         """ style.configure(
             "Run.TButton",
             background="#007FFF",
             foreground="white",
             ) """
-        
-        self.primary_frame = ttk.Frame(self.content_frame, style="Borde.TFrame", padding=10)
-        
-        self.primary_frame.grid(column=0, row=0, sticky='n')
-        ttk.Label(self.primary_frame, text="Parameters:", font=("Arial", 12, "bold") ).grid(
-            row=0, column=0, sticky="w"
+
+        self.primary_frame = ttk.Frame(
+            self.content_frame, style="Borde.TFrame", padding=10
         )
+
+        self.primary_frame.grid(column=0, row=0, sticky="n")
+        ttk.Label(
+            self.primary_frame, text="Parameters:", font=("Arial", 12, "bold")
+        ).grid(row=0, column=0, sticky="w")
         ttk.Label(self.primary_frame, text="Function (f):").grid(
             row=1, column=0, sticky="w"
         )
@@ -141,9 +153,11 @@ class OptimizerApp(tk.Tk):
         )
         self.search_combo.set("None")
         self.search_combo.grid(row=7, column=1, pady=5)
-        
+
         self.run_button = ttk.Button(
-            self.primary_frame, text="Run", command=self.run_optimization,
+            self.primary_frame,
+            text="Run",
+            command=self.run_optimization,
         )
 
         self.run_button.grid(row=9, column=0, columnspan=2, pady=10)
@@ -151,23 +165,29 @@ class OptimizerApp(tk.Tk):
             self.primary_frame, text="Show 3D Plot", command=self.on_show_3d_plot
         )
         self.plot3d_button.grid(row=9, column=2, columnspan=2, pady=10)
-        
+
         self.plot3d_contour_button = ttk.Button(
-            self.primary_frame, text="Show Contour \n     3D Plot", command=self.on_show_contour_plot
+            self.primary_frame,
+            text="Show Contour \n     3D Plot",
+            command=self.on_show_contour_plot,
         )
         self.plot3d_contour_button.grid(row=10, column=0, columnspan=2, pady=10)
-        
+
         self.plot3d_button_wpoints = ttk.Button(
-            self.primary_frame, text="Show 3D Plot \n  With Points", command=self.on_show_3d_plot_points
+            self.primary_frame,
+            text="Show 3D Plot \n  With Points",
+            command=self.on_show_3d_plot_points,
         )
         self.plot3d_button_wpoints.grid(row=10, column=2, columnspan=2, pady=10)
-        
-        self.secondary_frame = ttk.Frame(self.content_frame, style="Borde.TFrame", padding=10)
-        self.secondary_frame.grid(column=3, row=0, padx=53)
-        
-        ttk.Label(self.secondary_frame, text="Iterations:", font=("Arial", 12, "bold") ).grid(
-            row=1, column=0, sticky="w", padx=5
+
+        self.secondary_frame = ttk.Frame(
+            self.content_frame, style="Borde.TFrame", padding=10
         )
+        self.secondary_frame.grid(column=3, row=0, padx=53)
+
+        ttk.Label(
+            self.secondary_frame, text="Iterations:", font=("Arial", 12, "bold")
+        ).grid(row=1, column=0, sticky="w", padx=5)
         columns = ("iter", "f_x", "norm_grad", "alpha")
         self.tree = ttk.Treeview(
             self.secondary_frame, columns=columns, show="headings", height=19
@@ -177,8 +197,10 @@ class OptimizerApp(tk.Tk):
         self.tree.grid(row=2, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
 
         self.grid_columnconfigure(1, weight=1)
-        
-        self.terciary_frame = ttk.Frame(self.content_frame, style="Borde.TFrame", padding=10)
+
+        self.terciary_frame = ttk.Frame(
+            self.content_frame, style="Borde.TFrame", padding=10
+        )
         self.terciary_frame.grid(column=0, columnspan=4, row=2, pady=10)
 
         self.figure = plt.Figure(figsize=(6, 2.5), dpi=100)
@@ -196,12 +218,17 @@ class OptimizerApp(tk.Tk):
         )
 
         self.stats_label = ttk.Label(self.terciary_frame, text="")
-        self.stats_label.grid(row=1, column=2, columnspan=4, pady=10, )
-        
+        self.stats_label.grid(
+            row=1,
+            column=2,
+            columnspan=4,
+            pady=10,
+        )
+
     def on_mousewheel(self, event):
         widget = event.widget
 
-        if hasattr(event, 'delta'):
+        if hasattr(event, "delta"):
             delta = -1 * (event.delta // 120)
         elif event.num == 4:
             delta = -1
@@ -209,13 +236,12 @@ class OptimizerApp(tk.Tk):
             delta = 1
         else:
             return
-            
-        if widget.winfo_class() == 'Treeview':
+
+        if widget.winfo_class() == "Treeview":
             widget.yview_scroll(delta, "units")
             return "break"
         else:
             self.canvas_container.yview_scroll(delta, "units")
-        
 
     def run_optimization(self):
         try:
@@ -329,9 +355,9 @@ class OptimizerApp(tk.Tk):
             self.ax2.set_ylabel("‖∇f‖")
             self.ax2.grid(True)
             self.canvas2.draw()
-            
+
             x = [log["f_x"] for log in logger.get_log()]
-            y = [log['norm_grad'] for log in logger.get_log()]
+            y = [log["norm_grad"] for log in logger.get_log()]
 
             self.iteration_points = [x, y]
             self.point = np.round(x_opt, 6)
@@ -347,24 +373,25 @@ class OptimizerApp(tk.Tk):
     def on_show_3d_plot(self):
         func_str = self.func_entry.get()
         variables = [v.strip() for v in self.vars_entry.get().split(",")]
-        
+
         show_3d_plot(self, func_str, variables)
 
     def on_show_3d_plot_points(self):
         func_str = self.func_entry.get()
         variables = [v.strip() for v in self.vars_entry.get().split(",")]
-        
-        if hasattr(self, 'iteration_points'):
+
+        if hasattr(self, "iteration_points"):
             show_3d_plot(self, func_str, variables, self.iteration_points)
-    
+
     def on_show_contour_plot(self):
         func_str = self.func_entry.get()
         variables = [v.strip() for v in self.vars_entry.get().split(",")]
-        
-        if hasattr(self, 'point'):
+
+        if hasattr(self, "point"):
             contour_plot(self, func_str, variables, self.point)
         else:
             contour_plot(self, func_str, variables)
+
 
 if __name__ == "__main__":
     app = OptimizerApp()
