@@ -25,6 +25,7 @@ class OptimizerApp(tk.Tk):
         self.geometry(f"{screen_width-100}x{screen_height-100}")
         self.state("zoomed")
 
+        # load azure theme whether in PyInstaller bundle or not
         if hasattr(sys, "_MEIPASS"):
             theme_path = os.path.join(sys._MEIPASS, "azure", "azure.tcl")
         else:
@@ -32,7 +33,7 @@ class OptimizerApp(tk.Tk):
         self.tk.call("source", theme_path)
         self.tk.call("set_theme", "light")
 
-        # Canvas + Scrollbar
+        # Canvas + Scrollbars
         self.container = ttk.Frame(self)
         self.container.pack(fill="both", expand=True)
 
@@ -52,11 +53,8 @@ class OptimizerApp(tk.Tk):
         self.canvas_container.configure(yscrollcommand=self.scrollbar.set)
         self.canvas_container.configure(xscrollcommand=self.scrollbar_x.set)
 
-        # Frame dentro del canvas
-        style = ttk.Style().configure(
-            "General.TFrame",
-            background="#F3F3F3",
-        )
+        # Inner frame
+        ttk.Style().configure("General.TFrame", background="#F3F3F3")
         self.content_frame = ttk.Frame(
             self.canvas_container, style="General.TFrame", padding=10
         )
@@ -73,78 +71,61 @@ class OptimizerApp(tk.Tk):
         self.create_widgets()
 
     def create_widgets(self):
-        style = ttk.Style()
+        s = ttk.Style()
+        s.configure("Borde.TFrame", background="#FFFFFF", borderwidth=2, relief="solid")
 
-        style.configure(
-            "Borde.TFrame",
-            background="#FFFFFF",  # Fondo dorado
-            borderwidth=2,  # Grosor del borde
-            relief="solid",
-        )
-
-        """ style.configure(
-            "Run.TButton",
-            background="#007FFF",
-            foreground="white",
-            ) """
-
+        # Primary parameters frame
         self.primary_frame = ttk.Frame(
             self.content_frame, style="Borde.TFrame", padding=10
         )
+        self.primary_frame.grid(column=0, row=0, sticky="nw")
 
-        self.primary_frame.grid(column=0, row=0, sticky="n")
         ttk.Label(
             self.primary_frame, text="Parameters:", font=("Arial", 12, "bold")
         ).grid(row=0, column=0, sticky="w")
+        # Function
         ttk.Label(self.primary_frame, text="Function (f):").grid(
             row=1, column=0, sticky="w"
         )
         self.func_entry = ttk.Entry(self.primary_frame, width=50)
         self.func_entry.insert(0, "x**2 + y**2")
-        self.func_entry.grid(row=1, column=1, columnspan=3, pady=5)
-
+        self.func_entry.grid(row=1, column=1, columnspan=3, pady=5, sticky="w")
+        # Variables
         ttk.Label(self.primary_frame, text="Variables:").grid(
             row=2, column=0, sticky="w"
         )
         self.vars_entry = ttk.Entry(self.primary_frame)
         self.vars_entry.insert(0, "x,y")
-        self.vars_entry.grid(row=2, column=1, pady=5)
-
+        self.vars_entry.grid(row=2, column=1, pady=5, sticky="w")
+        # Initial Point
         ttk.Label(self.primary_frame, text="Initial Point:").grid(
-            row=3, column=0, sticky="w", pady=5
+            row=3, column=0, sticky="w"
         )
         self.x0_entry = ttk.Entry(self.primary_frame)
         self.x0_entry.insert(0, "3,4")
-        self.x0_entry.grid(row=3, column=1, pady=5)
-
+        self.x0_entry.grid(row=3, column=1, pady=5, sticky="w")
+        # Tolerance
         ttk.Label(self.primary_frame, text="Tolerance:").grid(
             row=4, column=0, sticky="w"
         )
         self.tol_entry = ttk.Entry(self.primary_frame)
         self.tol_entry.insert(0, "1e-6")
-        self.tol_entry.grid(row=4, column=1, pady=5)
-
+        self.tol_entry.grid(row=4, column=1, pady=5, sticky="w")
+        # Method
         ttk.Label(self.primary_frame, text="Method:").grid(row=5, column=0, sticky="w")
         self.method_combo = ttk.Combobox(
             self.primary_frame, values=["Gradient Descent", "BFGS", "Adam", "SGD"]
         )
         self.method_combo.set("Gradient Descent")
-        self.method_combo.grid(row=5, column=1, pady=5)
-
-        ttk.Label(self.primary_frame, text="Max Iterations:").grid(
-            row=8, column=0, sticky="w"
-        )
-        self.max_iter_entry = ttk.Entry(self.primary_frame)
-        self.max_iter_entry.insert(0, "100")
-        self.max_iter_entry.grid(row=8, column=1, pady=5)
-
+        self.method_combo.grid(row=5, column=1, pady=5, sticky="w")
+        # Learning Rate
         ttk.Label(self.primary_frame, text="Learning Rate:").grid(
             row=6, column=0, sticky="w"
         )
         self.lr_entry = ttk.Entry(self.primary_frame)
         self.lr_entry.insert(0, "0.01")
-        self.lr_entry.grid(row=6, column=1, pady=5)
-
+        self.lr_entry.grid(row=6, column=1, pady=5, sticky="w")
+        # Line Search
         ttk.Label(self.primary_frame, text="Line Search:").grid(
             row=7, column=0, sticky="w"
         )
@@ -152,177 +133,217 @@ class OptimizerApp(tk.Tk):
             self.primary_frame, values=["None", "Armijo", "Wolfe"]
         )
         self.search_combo.set("None")
-        self.search_combo.grid(row=7, column=1, pady=5)
-
-        self.run_button = ttk.Button(
-            self.primary_frame,
-            text="Run",
-            command=self.run_optimization,
+        self.search_combo.grid(row=7, column=1, pady=5, sticky="w")
+        # Max iterations
+        ttk.Label(self.primary_frame, text="Max Iterations:").grid(
+            row=8, column=0, sticky="w"
         )
+        self.max_iter_entry = ttk.Entry(self.primary_frame)
+        self.max_iter_entry.insert(0, "100")
+        self.max_iter_entry.grid(row=8, column=1, pady=5, sticky="w")
 
-        self.run_button.grid(row=9, column=0, columnspan=2, pady=10)
+        # Line Search Hyperparameters
+        ttk.Label(self.primary_frame, text="LS Max Iter:").grid(
+            row=9, column=2, sticky="w"
+        )
+        self.ls_max_iter_entry = ttk.Entry(self.primary_frame, width=6)
+        self.ls_max_iter_entry.insert(0, "20")
+        self.ls_max_iter_entry.grid(row=9, column=3, pady=5, sticky="w")
+
+        ttk.Label(self.primary_frame, text="ρ (rho):").grid(
+            row=10, column=2, sticky="w"
+        )
+        self.rho_entry = ttk.Entry(self.primary_frame, width=6)
+        self.rho_entry.insert(0, "0.5")
+        self.rho_entry.grid(row=10, column=3, pady=5, sticky="w")
+
+        ttk.Label(self.primary_frame, text="c (Armijo):").grid(
+            row=11, column=2, sticky="w"
+        )
+        self.c_entry = ttk.Entry(self.primary_frame, width=6)
+        self.c_entry.insert(0, "1e-4")
+        self.c_entry.grid(row=11, column=3, pady=5, sticky="w")
+
+        ttk.Label(self.primary_frame, text="c1 (Wolfe):").grid(
+            row=12, column=2, sticky="w"
+        )
+        self.c1_entry = ttk.Entry(self.primary_frame, width=6)
+        self.c1_entry.insert(0, "1e-4")
+        self.c1_entry.grid(row=12, column=3, pady=5, sticky="w")
+
+        ttk.Label(self.primary_frame, text="c2 (Wolfe):").grid(
+            row=13, column=2, sticky="w"
+        )
+        self.c2_entry = ttk.Entry(self.primary_frame, width=6)
+        self.c2_entry.insert(0, "0.9")
+        self.c2_entry.grid(row=13, column=3, pady=5, sticky="w")
+
+        # Buttons
+        self.run_button = ttk.Button(
+            self.primary_frame, text="Run", command=self.run_optimization
+        )
+        self.run_button.grid(row=14, column=0, columnspan=2, pady=10)
         self.plot3d_button = ttk.Button(
             self.primary_frame, text="Show 3D Plot", command=self.on_show_3d_plot
         )
-        self.plot3d_button.grid(row=9, column=2, columnspan=2, pady=10)
-
-        self.plot3d_contour_button = ttk.Button(
+        self.plot3d_button.grid(row=14, column=2, columnspan=2, pady=10)
+        self.plot_contour_button = ttk.Button(
             self.primary_frame,
-            text="Show Contour \n     3D Plot",
+            text="Show Contour Plot",
             command=self.on_show_contour_plot,
         )
-        self.plot3d_contour_button.grid(row=10, column=0, columnspan=2, pady=10)
-
-        self.plot3d_button_wpoints = ttk.Button(
+        self.plot_contour_button.grid(row=15, column=0, columnspan=2, pady=5)
+        self.plot3d_points_button = ttk.Button(
             self.primary_frame,
-            text="Show 3D Plot \n  With Points",
+            text="Show 3D With Points",
             command=self.on_show_3d_plot_points,
         )
-        self.plot3d_button_wpoints.grid(row=10, column=2, columnspan=2, pady=10)
+        self.plot3d_points_button.grid(row=15, column=2, columnspan=2, pady=5)
 
+        # Results table
         self.secondary_frame = ttk.Frame(
             self.content_frame, style="Borde.TFrame", padding=10
         )
-        self.secondary_frame.grid(column=3, row=0, padx=53)
-
+        self.secondary_frame.grid(column=1, row=0, padx=20, sticky="n")
         ttk.Label(
             self.secondary_frame, text="Iterations:", font=("Arial", 12, "bold")
-        ).grid(row=1, column=0, sticky="w", padx=5)
-        columns = ("iter", "f_x", "norm_grad", "alpha")
+        ).grid(row=0, column=0, sticky="w")
+        cols = ("iter", "f_x", "norm_grad", "alpha")
         self.tree = ttk.Treeview(
-            self.secondary_frame, columns=columns, show="headings", height=19
+            self.secondary_frame, columns=cols, show="headings", height=20
         )
-        for col in columns:
-            self.tree.heading(col, text=col)
-        self.tree.grid(row=2, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
+        for c in cols:
+            self.tree.heading(c, text=c)
+        self.tree.grid(row=1, column=0, columnspan=4, pady=5)
 
-        self.grid_columnconfigure(1, weight=1)
-
+        # Convergence plots (tertiary frame)
         self.terciary_frame = ttk.Frame(
             self.content_frame, style="Borde.TFrame", padding=10
         )
-        self.terciary_frame.grid(column=0, columnspan=4, row=2, pady=10)
+        self.terciary_frame.grid(column=0, columnspan=2, row=1, pady=10)
 
-        self.figure = plt.Figure(figsize=(6, 2.5), dpi=100)
+        # First convergence plot
+        self.figure = plt.Figure(figsize=(5, 3), dpi=100)
         self.ax = self.figure.add_subplot(111)
         self.canvas = FigureCanvasTkAgg(self.figure, self.terciary_frame)
-        self.canvas.get_tk_widget().grid(
-            row=0, column=0, columnspan=4, padx=10, pady=10, sticky="nsew"
-        )
+        self.canvas.get_tk_widget().grid(row=0, column=0)
 
-        self.figure2 = plt.Figure(figsize=(6, 2.5), dpi=100)
+        # Second convergence plot
+        self.figure2 = plt.Figure(figsize=(5, 3), dpi=100)
         self.ax2 = self.figure2.add_subplot(111)
         self.canvas2 = FigureCanvasTkAgg(self.figure2, self.terciary_frame)
-        self.canvas2.get_tk_widget().grid(
-            row=0, column=4, columnspan=4, padx=10, pady=10, sticky="nsew"
-        )
+        self.canvas2.get_tk_widget().grid(row=0, column=1)
 
+        # Stats label
         self.stats_label = ttk.Label(self.terciary_frame, text="")
-        self.stats_label.grid(
-            row=1,
-            column=2,
-            columnspan=4,
-            pady=10,
-        )
+        self.stats_label.grid(row=1, column=0, columnspan=2, pady=5)
 
     def on_mousewheel(self, event):
         widget = event.widget
-
-        if hasattr(event, "delta"):
-            delta = -1 * (event.delta // 120)
-        elif event.num == 4:
-            delta = -1
-        elif event.num == 5:
-            delta = 1
-        else:
-            return
-
+        delta = (
+            -1 * (event.delta // 120)
+            if hasattr(event, "delta")
+            else (-1 if event.num == 4 else 1)
+        )
         if widget.winfo_class() == "Treeview":
             widget.yview_scroll(delta, "units")
             return "break"
-        else:
-            self.canvas_container.yview_scroll(delta, "units")
+        self.canvas_container.yview_scroll(delta, "units")
 
     def run_optimization(self):
         try:
+            # Read inputs
             func_str = self.func_entry.get()
-            variables = [v.strip() for v in self.vars_entry.get().split(",")]
-            f = symbolic_function(func_str, variables)
-            grad_f = symbolic_gradient(func_str, variables)
-            x0 = np.array([float(val) for val in self.x0_entry.get().split(",")])
+            vars_ = [v.strip() for v in self.vars_entry.get().split(",")]
+            f = symbolic_function(func_str, vars_)
+            grad = symbolic_gradient(func_str, vars_)
+            x0 = np.array([float(v) for v in self.x0_entry.get().split(",")])
             tol = float(self.tol_entry.get())
-            learning_rate = float(self.lr_entry.get())
-            max_iter = int(self.max_iter_entry.get())
+            lr = float(self.lr_entry.get())
+            max_it = int(self.max_iter_entry.get())
 
+            # Line search params
+            ls_it = int(self.ls_max_iter_entry.get())
+            rho = float(self.rho_entry.get())
+            c_arm = float(self.c_entry.get())
+            c1 = float(self.c1_entry.get())
+            c2 = float(self.c2_entry.get())
+
+            # Logger + counters
             logger = OptimizerLogger()
-            logger.reset()  # por si se ejecuta múltiples veces
+            logger.reset()
+            evals = {"f": 0, "grad": 0}
 
-            eval_count = {"f": 0, "grad": 0}
-
-            def wrapped_f(*args):
-                eval_count["f"] += 1
+            def wf(*args):
+                evals["f"] += 1
                 return f(*args)
 
-            def wrapped_grad_f(*args):
-                eval_count["grad"] += 1
-                return grad_f(*args)
+            def wg(*args):
+                evals["grad"] += 1
+                return grad(*args)
 
-            ls_option = self.search_combo.get()
-            if ls_option == "Armijo":
-                line_search = armijo_backtracking
-            elif ls_option == "Wolfe":
-                line_search = wolfe_line_search
+            # Select line search
+            ls_opt = self.search_combo.get()
+            if ls_opt == "Armijo":
+                line_search = lambda f_, g_, x, d: armijo_backtracking(
+                    f_, g_, x, d, alpha_init=lr, rho=rho, c=c_arm, max_iter=ls_it
+                )
+            elif ls_opt == "Wolfe":
+                line_search = lambda f_, g_, x, d: wolfe_line_search(
+                    f_, g_, x, d, alpha_init=lr, c1=c1, c2=c2, rho=rho, max_iter=ls_it
+                )
             else:
                 line_search = None
 
+            # Run optimizer
+            start = time.perf_counter()
             method = self.method_combo.get()
-            start_time = time.perf_counter()
-
             if method == "BFGS":
                 x_opt, _ = bfgs(
-                    wrapped_f,
-                    wrapped_grad_f,
+                    wf,
+                    wg,
                     x0,
                     tol=tol,
-                    max_iter=max_iter,
+                    max_iter=max_it,
                     line_search=line_search,
                     callback=logger,
                 )
             elif method == "Adam":
                 x_opt, _ = adam(
-                    wrapped_f,
-                    wrapped_grad_f,
+                    wf,
+                    wg,
                     x0,
                     tol=tol,
-                    max_iter=max_iter,
-                    learning_rate=learning_rate,
+                    max_iter=max_it,
+                    learning_rate=lr,
                     callback=logger,
                 )
             elif method == "SGD":
                 x_opt, _ = stochastic_gradient_descent(
-                    wrapped_f,
-                    wrapped_grad_f,
+                    wf,
+                    wg,
                     x0,
                     tol=tol,
-                    max_iter=max_iter,
-                    learning_rate=learning_rate,
+                    max_iter=max_it,
+                    learning_rate=lr,
                     callback=logger,
                 )
             else:
                 x_opt, _ = gradient_descent(
-                    wrapped_f,
-                    wrapped_grad_f,
+                    wf,
+                    wg,
                     x0,
                     tol=tol,
-                    max_iter=max_iter,
+                    max_iter=max_it,
+                    step_size=lr,
                     line_search=line_search,
                     callback=logger,
                 )
+            elapsed = time.perf_counter() - start
 
-            end_time = time.perf_counter()
-            elapsed = end_time - start_time
-
-            self.tree.delete(*self.tree.get_children())
+            # Populate table
+            for i in self.tree.get_children():
+                self.tree.delete(i)
             for log in logger.get_log():
                 self.tree.insert(
                     "",
@@ -331,66 +352,59 @@ class OptimizerApp(tk.Tk):
                         log["iter"],
                         f"{log['f_x']:.6f}",
                         f"{log['norm_grad']:.6f}",
-                        f"{log['alpha']:.6f}" if log["alpha"] else "-",
+                        f"{log['alpha']:.6f}" if log["alpha"] is not None else "-",
                     ),
                 )
 
+            # Update convergence plots
+            its = [l["iter"] for l in logger.get_log()]
+            fx = [l["f_x"] for l in logger.get_log()]
+            ng = [l["norm_grad"] for l in logger.get_log()]
+
             self.ax.clear()
-            fx_vals = [log["f_x"] for log in logger.get_log()]
-            iterations = [log["iter"] for log in logger.get_log()]
-            self.ax.plot(iterations, fx_vals, marker="o", linestyle="-")
-            self.ax.set_title("Convergence of f(x)")
-            self.ax.set_xlabel("Iteration")
-            self.ax.set_ylabel("f(x)")
+            self.ax.plot(its, fx, marker="o")
+            self.ax.set_title("f(x)")
             self.ax.grid(True)
             self.canvas.draw()
 
             self.ax2.clear()
-            grad_vals = [log["norm_grad"] for log in logger.get_log()]
-            self.ax2.plot(
-                iterations, grad_vals, marker="o", linestyle="-", color="orange"
-            )
-            self.ax2.set_title("Convergence of ‖∇f(x)‖")
-            self.ax2.set_xlabel("Iteration")
-            self.ax2.set_ylabel("‖∇f‖")
+            self.ax2.plot(its, ng, marker="o")
+            self.ax2.set_title("||∇f||")
             self.ax2.grid(True)
             self.canvas2.draw()
 
-            x = [log["f_x"] for log in logger.get_log()]
-            y = [log["norm_grad"] for log in logger.get_log()]
-
-            self.iteration_points = [x, y]
-            self.point = np.round(x_opt, 6)
-            solution_text = f"Punto óptimo encontrado: {np.round(x_opt, 6)}"
+            # Stats
             self.stats_label.config(
-                text=solution_text
-                + f"\n⏱️ Time: {elapsed:.4f}s | f(x) calls: {eval_count['f']} | ∇f(x) calls: {eval_count['grad']}"
+                text=(
+                    f"Optimum: {np.round(x_opt,6)}   "
+                    f"Time: {elapsed:.4f}s   f calls: {evals['f']}   grad calls: {evals['grad']}"
+                )
             )
 
+            # Save points for 3D plotting
+            self.iter_points = (
+                [l["x"][0] for l in logger.get_log()],
+                [l["x"][1] for l in logger.get_log()],
+            )
+            self.opt_point = x_opt
+
         except Exception as e:
-            messagebox.showerror("Error", f"{type(e).__name__}: {str(e)}")
+            messagebox.showerror("Error", f"{type(e).__name__}: {e}")
 
     def on_show_3d_plot(self):
-        func_str = self.func_entry.get()
-        variables = [v.strip() for v in self.vars_entry.get().split(",")]
-
-        show_3d_plot(self, func_str, variables)
+        vars_ = [v.strip() for v in self.vars_entry.get().split(",")]
+        show_3d_plot(self, self.func_entry.get(), vars_)
 
     def on_show_3d_plot_points(self):
-        func_str = self.func_entry.get()
-        variables = [v.strip() for v in self.vars_entry.get().split(",")]
-
-        if hasattr(self, "iteration_points"):
-            show_3d_plot(self, func_str, variables, self.iteration_points)
+        vars_ = [v.strip() for v in self.vars_entry.get().split(",")]
+        if hasattr(self, "iter_points"):
+            show_3d_plot(self, self.func_entry.get(), vars_, self.iter_points)
 
     def on_show_contour_plot(self):
-        func_str = self.func_entry.get()
-        variables = [v.strip() for v in self.vars_entry.get().split(",")]
-
-        if hasattr(self, "point"):
-            contour_plot(self, func_str, variables, self.point)
-        else:
-            contour_plot(self, func_str, variables)
+        vars_ = [v.strip() for v in self.vars_entry.get().split(",")]
+        contour_plot(
+            self, self.func_entry.get(), vars_, getattr(self, "opt_point", None)
+        )
 
 
 if __name__ == "__main__":
